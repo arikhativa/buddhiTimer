@@ -4,9 +4,17 @@ import RootLayout from './app/_layout';
 import {View} from 'react-native';
 import {Text} from './components/ui/text';
 import {useDatabase} from './hooks/useDatabase';
+import {drizzle} from 'drizzle-orm/op-sqlite';
+import {open} from '@op-engineering/op-sqlite';
+
+const opsqliteDb = open({
+  name: 'db',
+});
+
+const db = drizzle(opsqliteDb);
 
 function App(): React.JSX.Element {
-  const {items, success, error} = useDatabase();
+  const {items, success, error} = useDatabase(db);
 
   const {setColorScheme} = useColorScheme();
 
@@ -28,7 +36,7 @@ function App(): React.JSX.Element {
     );
   }
 
-  if (items === null || items.length === 0) {
+  if (!items || items.length === 0) {
     console.log('No items');
     return (
       <View>

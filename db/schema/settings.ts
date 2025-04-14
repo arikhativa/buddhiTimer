@@ -1,5 +1,7 @@
 import {int, sqliteTable, text} from 'drizzle-orm/sqlite-core';
 
+import {InferSelectModel} from 'drizzle-orm';
+
 export const settingsTable = sqliteTable('settings_table', {
   id: int()
     .primaryKey()
@@ -10,3 +12,5 @@ export const settingsTable = sqliteTable('settings_table', {
     .notNull()
     .default('system'),
 });
+
+export type Settings = InferSelectModel<typeof settingsTable>;

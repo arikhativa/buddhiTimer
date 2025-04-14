@@ -1,28 +1,44 @@
 import {useEffect, useState} from 'react';
-import {open} from '@op-engineering/op-sqlite';
 import {useMigrations} from 'drizzle-orm/op-sqlite/migrator';
-import {drizzle} from 'drizzle-orm/op-sqlite';
 import migrations from '~/drizzle/migrations';
-import {settingsTable} from '~/db/schema/settings';
+import {Settings, settingsTable} from '~/db/schema/settings';
+import {createSelectSchema} from 'drizzle-zod';
+import {drizzle} from 'drizzle-orm/op-sqlite';
 
-const opsqliteDb = open({
-  name: 'db',
-});
+type Database = ReturnType<typeof drizzle>;
 
-const db = drizzle(opsqliteDb);
-
-export function useDatabase() {
+export function useDatabase(db: Database) {
   const {success, error} = useMigrations(db, migrations);
-  const [items, setItems] = useState<
-    (typeof settingsTable.$inferSelect)[] | null
-  >(null);
+  const settingsSelectSchema = createSelectSchema(settingsTable);
+
+  const [items, setItems] = useState<Settings[] | undefined>();
 
   useEffect(() => {
-    if (!success) return;
+    console.log(items);
+  }, [items]);
+
+  useEffect(() => {
+    console.log('E: ', error);
+  }, [error]);
+
+  useEffect(() => {
+    if (!success) {
+      console.error('failed to init db');
+    }
+
     (async () => {
-      const users = await db.select().from(settingsTable);
-      setItems(users);
-      console.log(users);
+      console.log('A');
+      const rows = await db.select().from(settingsTable).limit(1);
+      console.log('B', rows);
+      // if (!row || )
+      // const parsed = settingsSelectSchema.parse(rows[0]);
+      //
+      // console.log(parsed);
+      // if (!parsed) {
+      //   console.log('!parsed');
+      // }
+      //
+      // setItems([]);
     })();
   }, [success]);
 
