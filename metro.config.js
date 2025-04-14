@@ -12,4 +12,7 @@ config.resolver.extraNodeModules = {
 //   '~': path.resolve(__dirname),
 // };
 
+// for DB
+config.resolver.sourceExts.push('sql');
+
 module.exports = withNativeWind(config, {input: './global.css'});
