@@ -1,4 +1,5 @@
 import type {StaticScreenProps} from '@react-navigation/native';
+import {Sun} from 'lucide-react-native';
 import {View} from 'react-native';
 import {
   Card,
@@ -32,8 +33,9 @@ export function HomeScreen({route}: Props) {
             Here you can see all the features {route.params.username}
           </CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="bg-green-500">
           <Text>Here is a timer</Text>
+          <Sun color="red" className="color-white" />
         </CardContent>
         <CardFooter>
           <Text>Tax! I want Pigaffeta</Text>
