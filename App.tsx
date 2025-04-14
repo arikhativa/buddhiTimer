@@ -9,6 +9,7 @@ function App(): React.JSX.Element {
   verifyInstallation();
   const {setColorScheme} = useColorScheme();
   setColorScheme('dark');
+
   return <RootLayout />;
 }
 

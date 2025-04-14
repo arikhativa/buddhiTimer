@@ -3,29 +3,45 @@ import {
   ThemeProvider,
   DefaultTheme,
   DarkTheme,
+  StaticParamList,
+  StaticConfig,
 } from '@react-navigation/native';
 import * as React from 'react';
-import {Platform, StatusBar, View} from 'react-native';
+import {Platform, StatusBar} from 'react-native';
 import {NAV_THEME} from '~/lib/constants';
 import {useColorScheme} from '~/lib/useColorScheme';
 
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {createStaticNavigation} from '@react-navigation/native';
-import {Text} from '~/components/ui/text';
-
-function HomeScreen() {
-  return (
-    <View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
-      <Text>Home Screen</Text>
-    </View>
-  );
-}
+import {
+  HomeScreen,
+  title as homeTitle,
+  initParams as homeParams,
+} from './HomeScreen';
 
 const RootStack = createNativeStackNavigator({
+  initialRouteName: 'Home',
+  screenOptions: {
+    headerStyle: {backgroundColor: 'tomato'},
+  },
   screens: {
-    Home: HomeScreen,
+    Home: {
+      screen: HomeScreen,
+      options: {
+        title: homeTitle,
+      },
+      initialParams: homeParams,
+    },
   },
 });
+
+type RootStackParamList = StaticParamList<typeof RootStack>;
+
+declare global {
+  namespace ReactNavigation {
+    interface RootParamList extends RootStackParamList {}
+  }
+}
 
 const Navigation = createStaticNavigation(RootStack);
 

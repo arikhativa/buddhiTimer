@@ -8,8 +8,8 @@ config.resolver.extraNodeModules = {
   '~': path.resolve(__dirname),
 };
 
-config.resolver.alias = {
-  '~': path.resolve(__dirname),
-};
+// config.resolver.alias = {
+//   '~': path.resolve(__dirname),
+// };
 
 module.exports = withNativeWind(config, {input: './global.css'});
