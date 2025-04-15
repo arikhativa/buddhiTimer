@@ -4,7 +4,6 @@ import {
   DefaultTheme,
   DarkTheme,
   StaticParamList,
-  StaticConfig,
 } from '@react-navigation/native';
 import * as React from 'react';
 import {Platform, StatusBar} from 'react-native';
@@ -18,6 +17,7 @@ import {
   title as homeTitle,
   initParams as homeParams,
 } from './HomeScreen';
+import {ErrorScreen} from './ErrorScreen';
 
 const RootStack = createNativeStackNavigator({
   initialRouteName: 'Home',
@@ -55,7 +55,11 @@ const DARK_THEME: Theme = {
   colors: NAV_THEME.dark,
 };
 
-export default function RootLayout() {
+interface Props {
+  showErrorScreen: boolean;
+}
+
+export default function RootLayout({showErrorScreen}: Props) {
   const hasMounted = React.useRef(false);
   const {isDarkColorScheme} = useColorScheme();
   const [isColorSchemeLoaded, setIsColorSchemeLoaded] = React.useState(false);
@@ -82,7 +86,11 @@ export default function RootLayout() {
             : LIGHT_THEME.colors.background
         }
       />
-      <Navigation theme={isDarkColorScheme ? DARK_THEME : LIGHT_THEME} />
+      {showErrorScreen ? (
+        <ErrorScreen />
+      ) : (
+        <Navigation theme={isDarkColorScheme ? DARK_THEME : LIGHT_THEME} />
+      )}
     </ThemeProvider>
   );
 }

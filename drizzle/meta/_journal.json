@@ -8,6 +8,13 @@
       "when": 1744639036824,
       "tag": "0000_numerous_butterfly",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "6",
+      "when": 1744700481911,
+      "tag": "0001_seed-settings",
+      "breakpoints": true
     }
   ]
 }
