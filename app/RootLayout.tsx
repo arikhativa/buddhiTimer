@@ -9,7 +9,6 @@ import * as React from 'react';
 import {Platform, StatusBar} from 'react-native';
 import {NAV_THEME} from '~/lib/constants';
 import {useColorScheme} from '~/lib/useColorScheme';
-
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {createStaticNavigation} from '@react-navigation/native';
 import {
@@ -18,9 +17,10 @@ import {
   initParams as homeParams,
 } from './HomeScreen';
 import {ErrorScreen} from './ErrorScreen';
+import {SettingsScreen} from './SettingsScreen';
 
 const RootStack = createNativeStackNavigator({
-  initialRouteName: 'Home',
+  initialRouteName: 'Settings',
   screenOptions: {
     headerStyle: {backgroundColor: 'tomato'},
   },
@@ -31,6 +31,9 @@ const RootStack = createNativeStackNavigator({
         title: homeTitle,
       },
       initialParams: homeParams,
+    },
+    Settings: {
+      screen: SettingsScreen,
     },
   },
 });

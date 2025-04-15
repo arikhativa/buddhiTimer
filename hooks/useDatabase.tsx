@@ -9,7 +9,7 @@ const opsqliteDb = open({
   name: 'db',
 });
 
-const db = drizzle(opsqliteDb);
+export const db = drizzle(opsqliteDb);
 
 export function useDatabase() {
   const {success, error} = useMigrations(db, migrations);

@@ -1,6 +1,6 @@
 import {int, sqliteTable, text} from 'drizzle-orm/sqlite-core';
-
-import {InferSelectModel} from 'drizzle-orm';
+import {createSelectSchema} from 'drizzle-zod';
+import {z} from 'zod';
 
 export const settingsTable = sqliteTable('settings_table', {
   id: int()
@@ -13,4 +13,13 @@ export const settingsTable = sqliteTable('settings_table', {
     .default('system'),
 });
 
-export type Settings = InferSelectModel<typeof settingsTable>;
+export const settingsSchema = createSelectSchema(settingsTable, {
+  id: z.number(),
+});
+export const settingsKeyword = 'settings';
+export type Settings = z.input<typeof settingsSchema>;
+
+export const settingDefaultObject: Settings = {
+  id: 1,
+  theme: 'loadin',
+};
