@@ -1,8 +1,8 @@
 import './global.css';
 import {useColorScheme} from 'nativewind';
-import RootLayout from './app/_layout';
 import {useDatabase} from './hooks/useDatabase';
 import {useEffect} from 'react';
+import RootLayout from './app/RootLayout';
 
 function App(): React.JSX.Element {
   const {settings, success, error} = useDatabase();
@@ -13,7 +13,7 @@ function App(): React.JSX.Element {
     if (settings) {
       setColorScheme(settings.theme);
     }
-  }, [settings]);
+  }, [setColorScheme, settings]);
 
   const showErrorScreen = !success && !!error;
 
