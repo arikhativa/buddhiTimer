@@ -8,13 +8,9 @@ import {SettingsService} from '~/services/settings';
 type Props = PropsWithChildren & {};
 
 export function SettingsScreen({}: Props) {
-  const fetch = async () => {
-    return SettingsService.get();
-  };
-
   const {isPending, error, data} = useQuery<Settings, Error>({
     queryKey: [settingsKeyword],
-    queryFn: () => fetch(),
+    queryFn: SettingsService.get,
   });
 
   // TODO: better sipnner

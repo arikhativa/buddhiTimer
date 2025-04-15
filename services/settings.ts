@@ -1,11 +1,18 @@
-import {settingsSchema, settingsTable} from '~/db/schema/settings';
+import {settingsSchema} from '~/db/schema/settings';
 import {db} from '~/hooks/useDatabase';
+
+const get = db.query.settingsTable
+  .findFirst({
+    columns: {
+      id: false,
+    },
+  })
+  .prepare();
 
 export class SettingsService {
   static async get() {
-    const rows = await db.select().from(settingsTable).limit(1);
-    const obj = settingsSchema.parse(rows[0]);
+    const raw = await get.execute();
 
-    return obj;
+    return settingsSchema.parse(raw);
   }
 }

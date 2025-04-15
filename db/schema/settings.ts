@@ -13,13 +13,9 @@ export const settingsTable = sqliteTable('settings_table', {
     .default('system'),
 });
 
-export const settingsSchema = createSelectSchema(settingsTable, {
-  id: z.number(),
+export const settingsSchema = createSelectSchema(settingsTable).omit({
+  id: true,
 });
+
 export const settingsKeyword = 'settings';
 export type Settings = z.input<typeof settingsSchema>;
-
-export const settingDefaultObject: Settings = {
-  id: 1,
-  theme: 'loadin',
-};

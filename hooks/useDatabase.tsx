@@ -5,11 +5,13 @@ import {Settings, settingsTable} from '~/db/schema/settings';
 
 import {drizzle} from 'drizzle-orm/op-sqlite';
 import {open} from '@op-engineering/op-sqlite';
+import * as schema from '~/db/schema/settings';
+
 const opsqliteDb = open({
   name: 'db',
 });
 
-export const db = drizzle(opsqliteDb);
+export const db = drizzle(opsqliteDb, {schema});
 
 export function useDatabase() {
   const {success, error} = useMigrations(db, migrations);
