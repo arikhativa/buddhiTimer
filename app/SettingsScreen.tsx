@@ -1,6 +1,7 @@
 import {useQuery} from '@tanstack/react-query';
 import {PropsWithChildren} from 'react';
 import {View} from 'react-native';
+import {Button} from '~/components/ui/button';
 import {Text} from '~/components/ui/text';
 import {Settings, settingsKeyword} from '~/db/schema/settings';
 import {SettingsService} from '~/services/settings';
@@ -41,6 +42,12 @@ export function SettingsScreen({}: Props) {
   return (
     <View>
       <Text className="bg-blue-200">Settting Screen: {data.theme}</Text>
+      <Button
+        onPress={() => {
+          SettingsService.update({theme: 'dark'});
+        }}>
+        <Text> Update</Text>
+      </Button>
     </View>
   );
 }

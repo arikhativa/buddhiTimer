@@ -1,7 +1,15 @@
-import {settingsSchema} from '~/db/schema/settings';
+import {eq} from 'drizzle-orm';
+import {
+  ID,
+  Settings,
+  SettingsUpdate,
+  settingsSchema,
+  settingsTable,
+  settingsUpdateSchema,
+} from '~/db/schema/settings';
 import {db} from '~/hooks/useDatabase';
 
-const get = db.query.settingsTable
+const getQuery = db.query.settingsTable
   .findFirst({
     columns: {
       id: false,
@@ -10,9 +18,25 @@ const get = db.query.settingsTable
   .prepare();
 
 export class SettingsService {
-  static async get() {
-    const raw = await get.execute();
+  static async get(): Promise<Settings> {
+    const raw = await getQuery.execute();
 
     return settingsSchema.parse(raw);
+  }
+
+  static async update(obj: SettingsUpdate): Promise<Settings> {
+    const parsed = settingsUpdateSchema.parse(obj);
+
+    const ret = await db
+      .update(settingsTable)
+      .set(parsed)
+      .where(eq(settingsTable.id, ID))
+      .returning();
+
+    if (!ret || !ret.length) {
+      throw new Error('Failed to update');
+    }
+
+    return ret[0];
   }
 }
