@@ -18,6 +18,7 @@ import {
 } from './HomeScreen';
 import {ErrorScreen} from './ErrorScreen';
 import {SettingsScreen} from './SettingsScreen';
+import {PortalHost} from '@rn-primitives/portal';
 
 const RootStack = createNativeStackNavigator({
   initialRouteName: 'Settings',
@@ -92,7 +93,10 @@ export default function RootLayout({showErrorScreen}: Props) {
       {showErrorScreen ? (
         <ErrorScreen />
       ) : (
-        <Navigation theme={isDarkColorScheme ? DARK_THEME : LIGHT_THEME} />
+        <>
+          <Navigation theme={isDarkColorScheme ? DARK_THEME : LIGHT_THEME} />
+          <PortalHost />
+        </>
       )}
     </ThemeProvider>
   );

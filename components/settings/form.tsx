@@ -17,6 +17,7 @@ import {
   FormLabel,
   FormMessage,
 } from '../general/form';
+import SelectTheme from './SelectTheme';
 type Props = PropsWithChildren & {data: SettingsUpdate};
 
 export function SettingsForm({data}: Props) {
@@ -30,8 +31,8 @@ export function SettingsForm({data}: Props) {
   }
 
   return (
-    <Form {...form}>
-      <View className="space-y-8">
+    <View className="px-4">
+      <Form {...form}>
         <FormField
           control={form.control}
           name="theme"
@@ -39,12 +40,7 @@ export function SettingsForm({data}: Props) {
             <FormItem>
               <FormLabel>Theme</FormLabel>
               <FormControl>
-                <Input
-                  placeholder="Select theme"
-                  onBlur={onBlur}
-                  onChangeText={onChange}
-                  value={value}
-                />
+                <SelectTheme />
               </FormControl>
               <FormDescription>
                 This will change your app theme.
@@ -53,10 +49,16 @@ export function SettingsForm({data}: Props) {
             </FormItem>
           )}
         />
-        <Button onPress={form.handleSubmit(onSubmit)}>
-          <Text>Submit</Text>
-        </Button>
-      </View>
-    </Form>
+      </Form>
+      <Button onPress={form.handleSubmit(onSubmit)}>
+        <Text>Submit</Text>
+      </Button>
+    </View>
   );
 }
+// <Input
+//   placeholder="Select theme"
+//   onBlur={onBlur}
+//   onChangeText={onChange}
+//   value={value}
+// />

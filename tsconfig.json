@@ -5,7 +5,9 @@
     "moduleResolution": "bundler",
     "baseUrl": ".",
     "paths": {
-      "~/*": ["./*"]
+      "~/*": ["./*"],
+      // these is a bug with this component so i needed to copy it manualy
+       "@rn-primitives/portal": ["components/primitives/portal.tsx"]
     }
   },
   "include": ["**/*.ts", "**/*.tsx", "nativewind-env.d.ts"]

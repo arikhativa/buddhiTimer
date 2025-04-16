@@ -6,11 +6,11 @@ const config = getDefaultConfig(__dirname);
 
 config.resolver.extraNodeModules = {
   '~': path.resolve(__dirname),
+  '@rn-primitives/portal': path.resolve(
+    __dirname,
+    'components/primitives/portal',
+  ),
 };
-
-// config.resolver.alias = {
-//   '~': path.resolve(__dirname),
-// };
 
 // for DB
 config.resolver.sourceExts.push('sql');
