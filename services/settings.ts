@@ -1,13 +1,11 @@
-import {eq} from 'drizzle-orm';
+import { eq } from 'drizzle-orm';
 import {
   ID,
   Settings,
-  SettingsUpdate,
   settingsSchema,
   settingsTable,
-  settingsUpdateSchema,
 } from '~/db/schema/settings';
-import {db} from '~/hooks/useDatabase';
+import { db } from '~/hooks/useDatabase';
 
 const getQuery = db.query.settingsTable
   .findFirst({
@@ -24,8 +22,8 @@ export class SettingsService {
     return settingsSchema.parse(raw);
   }
 
-  static async update(obj: SettingsUpdate): Promise<Settings> {
-    const parsed = settingsUpdateSchema.parse(obj);
+  static async update(obj: Settings): Promise<Settings> {
+    const parsed = settingsSchema.parse(obj);
 
     const ret = await db
       .update(settingsTable)

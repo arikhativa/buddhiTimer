@@ -1,46 +1,36 @@
-import type {StaticScreenProps} from '@react-navigation/native';
-import {Sun} from 'lucide-react-native';
-import {View} from 'react-native';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from '~/components/ui/card';
-import {Text} from '~/components/ui/text';
+import { useNavigation } from '@react-navigation/native';
+import { View } from 'react-native';
+import { CardButton } from '~/components/home/cardButton';
+import { ChartNoAxesCombined } from '~/lib/icons/ChartNoAxesCombined';
+import { Settings } from '~/lib/icons/Settings';
+import { SquareStack } from '~/lib/icons/SquareStack';
+import { Timer } from '~/lib/icons/Timer';
 
-type Params = {
-  username: string;
-};
+export function HomeScreen() {
+  const navigation = useNavigation();
 
-type Props = StaticScreenProps<Params>;
-
-export const initParams: Params = {
-  username: 'Pigafetta',
-};
-
-export const title = 'Buhddi timer home screen';
-
-export function HomeScreen({route}: Props) {
   return (
     <View className="flex flex-1 justify-center items-center">
-      <Card className="w-full max-w-sm">
-        <CardHeader>
-          <CardTitle>Home Screen</CardTitle>
-          <CardDescription>
-            Here you can see all the features {route.params.username}
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="bg-green-500">
-          <Text>Here is a timer</Text>
-          <Sun color="red" className="color-white" />
-        </CardContent>
-        <CardFooter>
-          <Text>Tax! I want Pigaffeta</Text>
-        </CardFooter>
-      </Card>
+      <View className="flex flex-row flex-wrap justify-between w-full px-4">
+        <View className="w-1/2 p-2">
+          <CardButton disabled title="Timer" icon={Timer} />
+        </View>
+        <View className="w-1/2 p-2">
+          <CardButton disabled title="Presets" icon={SquareStack} />
+        </View>
+        <View className="w-1/2 p-2">
+          <CardButton
+            title="Settings"
+            icon={Settings}
+            onPress={() => {
+              navigation.navigate('Settings');
+            }}
+          />
+        </View>
+        <View className="w-1/2 p-2">
+          <CardButton disabled title="Statistics" icon={ChartNoAxesCombined} />
+        </View>
+      </View>
     </View>
   );
 }

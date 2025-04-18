@@ -6,30 +6,25 @@ import {
   StaticParamList,
 } from '@react-navigation/native';
 import * as React from 'react';
-import { Platform, StatusBar } from 'react-native';
+import { Platform, StatusBar, StyleSheet, View } from 'react-native';
 import { NAV_THEME } from '~/lib/constants';
 import { useColorScheme } from '~/lib/useColorScheme';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createStaticNavigation } from '@react-navigation/native';
-import {
-  HomeScreen,
-  title as homeTitle,
-  initParams as homeParams,
-} from './HomeScreen';
+import { HomeScreen } from './HomeScreen';
 import { ErrorScreen } from './ErrorScreen';
 import { SettingsScreen } from './SettingsScreen';
 import { PortalHost } from '@rn-primitives/portal';
 import useSettingsQuery from '~/hooks/useSettingsQuery';
 
 const RootStack = createNativeStackNavigator({
-  initialRouteName: 'Settings',
+  initialRouteName: 'Home',
   screens: {
     Home: {
       screen: HomeScreen,
       options: {
-        title: homeTitle,
+        headerShown: false,
       },
-      initialParams: homeParams,
     },
     Settings: {
       screen: SettingsScreen,
@@ -61,9 +56,9 @@ interface Props {
   showErrorScreen: boolean;
 }
 
-export default function RootLayout({ showErrorScreen }: Props) {
+export default function Layout({ showErrorScreen }: Props) {
   const hasMounted = React.useRef(false);
-  const { data, isSuccess } = useSettingsQuery();
+  const { data, isSuccess, isFetching } = useSettingsQuery();
 
   const { isDarkColorScheme, setColorScheme } = useColorScheme();
   const [isColorSchemeLoaded, setIsColorSchemeLoaded] = React.useState(false);
@@ -72,7 +67,7 @@ export default function RootLayout({ showErrorScreen }: Props) {
     if (isColorSchemeLoaded && isSuccess) {
       setColorScheme(data.theme);
     }
-  }, [isColorSchemeLoaded, setColorScheme, isSuccess, data]);
+  }, [isColorSchemeLoaded, setColorScheme, isSuccess, data, isFetching]);
 
   useIsomorphicLayoutEffect(() => {
     if (hasMounted.current) {
@@ -85,6 +80,10 @@ export default function RootLayout({ showErrorScreen }: Props) {
   if (!isColorSchemeLoaded) {
     return null;
   }
+
+  const container = isDarkColorScheme
+    ? styles.containerDark
+    : styles.containerLight;
 
   return (
     <ThemeProvider value={isDarkColorScheme ? DARK_THEME : LIGHT_THEME}>
@@ -99,14 +98,23 @@ export default function RootLayout({ showErrorScreen }: Props) {
       {showErrorScreen ? (
         <ErrorScreen />
       ) : (
-        <>
+        <View className="flex-1" style={container}>
           <Navigation theme={isDarkColorScheme ? DARK_THEME : LIGHT_THEME} />
           <PortalHost />
-        </>
+        </View>
       )}
     </ThemeProvider>
   );
 }
+
+const styles = StyleSheet.create({
+  containerDark: {
+    backgroundColor: DARK_THEME.colors.background,
+  },
+  containerLight: {
+    backgroundColor: LIGHT_THEME.colors.background,
+  },
+});
 
 const useIsomorphicLayoutEffect =
   Platform.OS === 'web' // && typeof window === 'undefined'

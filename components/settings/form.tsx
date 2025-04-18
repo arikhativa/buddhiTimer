@@ -32,10 +32,17 @@ export function SettingsForm({ data }: Props) {
 
   const queryClient = useQueryClient();
 
-  const mutationFn: MutationFunction<unknown, Settings> = async (
+  const mutationFn: MutationFunction<Settings, Settings> = async (
     values: Settings,
   ) => {
     return SettingsService.update(values);
+  };
+
+  const onSuccess = (freshData: Settings) => {
+    if (freshData) {
+      form.reset(freshData);
+    }
+    queryClient.invalidateQueries({ queryKey: [settingsKeyword] });
   };
 
   const mutation = useMutation({
@@ -44,9 +51,7 @@ export function SettingsForm({ data }: Props) {
     onError: e => {
       console.error('submit form error:', e);
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [settingsKeyword] });
-    },
+    onSuccess,
     retry: 1,
     retryDelay: 1000,
   });
@@ -56,7 +61,9 @@ export function SettingsForm({ data }: Props) {
   const submit = form.handleSubmit(values => mutation.mutate(values));
 
   useEffect(() => {
-    submit();
+    if (isDirty) {
+      submit();
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isDirty]);
 

@@ -4,7 +4,7 @@ import {
   focusManager,
 } from '@tanstack/react-query';
 import { AppStateStatus, Platform } from 'react-native';
-import RootLayout from './app/RootLayout';
+import Layout from './app/Layout';
 import './global.css';
 import { useAppState } from './hooks/useAppState';
 import { useDatabase } from './hooks/useDatabase';
@@ -34,7 +34,7 @@ function App(): React.JSX.Element {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <RootLayout showErrorScreen={showErrorScreen} />
+      <Layout showErrorScreen={showErrorScreen} />
     </QueryClientProvider>
   );
 }
