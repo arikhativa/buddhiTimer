@@ -1,5 +1,3 @@
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm } from 'react-hook-form';
 import { View } from 'react-native';
 import {
   Settings,
@@ -14,58 +12,25 @@ import {
   FormLabel,
 } from '../sheard/form';
 import SelectTheme from './SelectTheme';
-import { PropsWithChildren, useEffect } from 'react';
+import { PropsWithChildren } from 'react';
 import { settingsScreenString } from '~/lib/strings/settingsScreen';
 import { SettingsService } from '~/services/settings';
-import {
-  MutationFunction,
-  useMutation,
-  useQueryClient,
-} from '@tanstack/react-query';
+import useFormSetup from '~/hooks/useFormSetup';
 
 type Props = PropsWithChildren & { data: Settings };
 export function SettingsForm({ data }: Props) {
-  const form = useForm<Settings>({
-    resolver: zodResolver(settingsSchema),
+  const convertObjectToForm = (obj: Settings): Settings => {
+    return obj;
+  };
+
+  const { form } = useFormSetup<Settings, Settings>({
+    schema: settingsSchema,
+    mutate: SettingsService.update,
+    convertObjectToForm,
+    queryKeyword: settingsKeyword,
     defaultValues: data,
+    isAutoSubmit: true,
   });
-
-  const queryClient = useQueryClient();
-
-  const mutationFn: MutationFunction<Settings, Settings> = async (
-    values: Settings,
-  ) => {
-    return SettingsService.update(values);
-  };
-
-  const onSuccess = (freshData: Settings) => {
-    if (freshData) {
-      form.reset(freshData);
-    }
-    queryClient.invalidateQueries({ queryKey: [settingsKeyword] });
-  };
-
-  const mutation = useMutation({
-    mutationFn,
-    // TODO: add indecator
-    onError: e => {
-      console.error('submit form error:', e);
-    },
-    onSuccess,
-    retry: 1,
-    retryDelay: 1000,
-  });
-
-  const isDirty = form.formState.isDirty;
-
-  const submit = form.handleSubmit(values => mutation.mutate(values));
-
-  useEffect(() => {
-    if (isDirty) {
-      submit();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isDirty]);
 
   return (
     <View className="px-8 mt-20">
