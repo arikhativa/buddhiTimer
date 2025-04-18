@@ -1,64 +1,81 @@
-import {PropsWithChildren} from 'react';
-import {View} from 'react-native';
-import {Button} from '~/components/ui/button';
-import {Text} from '~/components/ui/text';
-import {SettingsService} from '~/services/settings';
-
-import {zodResolver} from '@hookform/resolvers/zod';
-import {useForm} from 'react-hook-form';
-import {SettingsUpdate, settingsUpdateSchema} from '~/db/schema/settings';
-import {Input} from '../ui/input';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useForm } from 'react-hook-form';
+import { View } from 'react-native';
+import {
+  Settings,
+  settingsKeyword,
+  settingsSchema,
+} from '~/db/schema/settings';
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
-  FormMessage,
-} from '../general/form';
+} from '../sheard/form';
 import SelectTheme from './SelectTheme';
-type Props = PropsWithChildren & {data: SettingsUpdate};
+import { PropsWithChildren, useEffect } from 'react';
+import { settingsScreenString } from '~/lib/strings/settingsScreen';
+import { SettingsService } from '~/services/settings';
+import {
+  MutationFunction,
+  useMutation,
+  useQueryClient,
+} from '@tanstack/react-query';
 
-export function SettingsForm({data}: Props) {
-  const form = useForm<SettingsUpdate>({
-    resolver: zodResolver(settingsUpdateSchema),
+type Props = PropsWithChildren & { data: Settings };
+export function SettingsForm({ data }: Props) {
+  const form = useForm<Settings>({
+    resolver: zodResolver(settingsSchema),
     defaultValues: data,
   });
 
-  function onSubmit(values: SettingsUpdate) {
-    console.log(values);
-  }
+  const queryClient = useQueryClient();
+
+  const mutationFn: MutationFunction<unknown, Settings> = async (
+    values: Settings,
+  ) => {
+    return SettingsService.update(values);
+  };
+
+  const mutation = useMutation({
+    mutationFn,
+    // TODO: add indecator
+    onError: e => {
+      console.error('submit form error:', e);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [settingsKeyword] });
+    },
+    retry: 1,
+    retryDelay: 1000,
+  });
+
+  const isDirty = form.formState.isDirty;
+
+  const submit = form.handleSubmit(values => mutation.mutate(values));
+
+  useEffect(() => {
+    submit();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isDirty]);
 
   return (
-    <View className="px-4">
+    <View className="px-8 mt-20">
       <Form {...form}>
         <FormField
           control={form.control}
           name="theme"
-          render={({field: {onChange, onBlur, value}}) => (
-            <FormItem>
-              <FormLabel>Theme</FormLabel>
+          render={({ field: { onChange, value } }) => (
+            <FormItem className="flex flex-row justify-between items-center">
+              <FormLabel>{settingsScreenString.form.theme.title}</FormLabel>
               <FormControl>
-                <SelectTheme />
+                <SelectTheme value={value} onChange={onChange} />
               </FormControl>
-              <FormDescription>
-                This will change your app theme.
-              </FormDescription>
-              <FormMessage />
             </FormItem>
           )}
         />
       </Form>
-      <Button onPress={form.handleSubmit(onSubmit)}>
-        <Text>Submit</Text>
-      </Button>
     </View>
   );
 }
-// <Input
-//   placeholder="Select theme"
-//   onBlur={onBlur}
-//   onChangeText={onChange}
-//   value={value}
-// />

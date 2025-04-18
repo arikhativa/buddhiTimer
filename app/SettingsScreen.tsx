@@ -1,18 +1,12 @@
-import {useQuery} from '@tanstack/react-query';
-import {PropsWithChildren} from 'react';
-import {View} from 'react-native';
-import {Text} from '~/components/ui/text';
-import {Settings, SettingsUpdate, settingsKeyword} from '~/db/schema/settings';
-import {SettingsService} from '~/services/settings';
-import {SettingsForm} from '~/components/settings/form';
-// import {settingsUpdateSchema} from '~/db/schema/settings';
+import { PropsWithChildren } from 'react';
+import { View } from 'react-native';
+import { Text } from '~/components/ui/text';
+import { SettingsForm } from '~/components/settings/form';
+import useSettingsQuery from '~/hooks/useSettingsQuery';
 type Props = PropsWithChildren & {};
 
 export function SettingsScreen({}: Props) {
-  const {isPending, error, data} = useQuery<Settings, Error>({
-    queryKey: [settingsKeyword],
-    queryFn: SettingsService.get,
-  });
+  const { isPending, error, data } = useSettingsQuery();
 
   // TODO: better sipnner
   if (isPending) {
@@ -39,10 +33,5 @@ export function SettingsScreen({}: Props) {
     );
   }
 
-  return (
-    <View>
-      <Text className="bg-blue-200">Settting Screen: {data.theme}</Text>
-      <SettingsForm data={data} />
-    </View>
-  );
+  return <SettingsForm data={data} />;
 }

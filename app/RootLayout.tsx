@@ -6,25 +6,23 @@ import {
   StaticParamList,
 } from '@react-navigation/native';
 import * as React from 'react';
-import {Platform, StatusBar} from 'react-native';
-import {NAV_THEME} from '~/lib/constants';
-import {useColorScheme} from '~/lib/useColorScheme';
-import {createNativeStackNavigator} from '@react-navigation/native-stack';
-import {createStaticNavigation} from '@react-navigation/native';
+import { Platform, StatusBar } from 'react-native';
+import { NAV_THEME } from '~/lib/constants';
+import { useColorScheme } from '~/lib/useColorScheme';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { createStaticNavigation } from '@react-navigation/native';
 import {
   HomeScreen,
   title as homeTitle,
   initParams as homeParams,
 } from './HomeScreen';
-import {ErrorScreen} from './ErrorScreen';
-import {SettingsScreen} from './SettingsScreen';
-import {PortalHost} from '@rn-primitives/portal';
+import { ErrorScreen } from './ErrorScreen';
+import { SettingsScreen } from './SettingsScreen';
+import { PortalHost } from '@rn-primitives/portal';
+import useSettingsQuery from '~/hooks/useSettingsQuery';
 
 const RootStack = createNativeStackNavigator({
   initialRouteName: 'Settings',
-  screenOptions: {
-    headerStyle: {backgroundColor: 'tomato'},
-  },
   screens: {
     Home: {
       screen: HomeScreen,
@@ -63,10 +61,18 @@ interface Props {
   showErrorScreen: boolean;
 }
 
-export default function RootLayout({showErrorScreen}: Props) {
+export default function RootLayout({ showErrorScreen }: Props) {
   const hasMounted = React.useRef(false);
-  const {isDarkColorScheme} = useColorScheme();
+  const { data, isSuccess } = useSettingsQuery();
+
+  const { isDarkColorScheme, setColorScheme } = useColorScheme();
   const [isColorSchemeLoaded, setIsColorSchemeLoaded] = React.useState(false);
+
+  React.useEffect(() => {
+    if (isColorSchemeLoaded && isSuccess) {
+      setColorScheme(data.theme);
+    }
+  }, [isColorSchemeLoaded, setColorScheme, isSuccess, data]);
 
   useIsomorphicLayoutEffect(() => {
     if (hasMounted.current) {

@@ -1,16 +1,23 @@
-import {useSafeAreaInsets} from 'react-native-safe-area-context';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import {
   Select,
   SelectContent,
   SelectGroup,
   SelectItem,
-  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from '~/components/ui/select';
+import { settingsScreenString } from '~/lib/strings/settingsScreen';
+import { capitalizeFirstLetter } from '~/lib/utils';
 
-export default function SelectTheme() {
+interface Props {
+  value: string;
+  onChange: (v: string) => void;
+}
+
+export default function SelectTheme({ value, onChange }: Props) {
   const insets = useSafeAreaInsets();
+
   const contentInsets = {
     top: insets.top,
     bottom: insets.bottom,
@@ -18,32 +25,31 @@ export default function SelectTheme() {
     right: 12,
   };
 
+  const items = settingsScreenString.items;
+
+  const capitalized = capitalizeFirstLetter(value);
+
+  const option = {
+    value: capitalized,
+    label: capitalized,
+  };
   return (
-    <Select defaultValue={{value: 'apple', label: 'Apple'}}>
+    <Select
+      value={option}
+      onValueChange={o => {
+        o && onChange(o.value.toLowerCase());
+      }}>
       <SelectTrigger className="w-[250px]">
         <SelectValue
           className="text-foreground text-sm native:text-lg"
-          placeholder="Select a fruit"
+          placeholder=""
         />
       </SelectTrigger>
       <SelectContent insets={contentInsets} className="w-[250px]">
         <SelectGroup>
-          <SelectLabel>Fruits</SelectLabel>
-          <SelectItem label="Apple" value="apple">
-            Apple
-          </SelectItem>
-          <SelectItem label="Banana" value="banana">
-            Banana
-          </SelectItem>
-          <SelectItem label="Blueberry" value="blueberry">
-            Blueberry
-          </SelectItem>
-          <SelectItem label="Grapes" value="grapes">
-            Grapes
-          </SelectItem>
-          <SelectItem label="Pineapple" value="pineapple">
-            Pineapple
-          </SelectItem>
+          {items.map(e => (
+            <SelectItem key={e} label={e} value={e} />
+          ))}
         </SelectGroup>
       </SelectContent>
     </Select>

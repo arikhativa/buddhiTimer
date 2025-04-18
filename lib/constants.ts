@@ -16,3 +16,6 @@ export const NAV_THEME = {
     text: 'hsl(0 0% 98%)', // foreground
   },
 };
+
+export const MINUTE = 60 * 1;
+export const USE_QUERY_STALE_TIME = 5 * MINUTE;
