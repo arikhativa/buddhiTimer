@@ -13,7 +13,13 @@ export function HomeScreen() {
     <View className="flex flex-1 justify-center items-center">
       <View className="flex flex-row flex-wrap justify-between w-full px-4">
         <View className="w-1/2 p-2">
-          <CardButton disabled title="Timer" icon={Timer} />
+          <CardButton
+            title="Timer"
+            icon={Timer}
+            onPress={() => {
+              navigation.navigate('Timer');
+            }}
+          />
         </View>
         <View className="w-1/2 p-2">
           <CardButton disabled title="Presets" icon={SquareStack} />

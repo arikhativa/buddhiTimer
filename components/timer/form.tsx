@@ -1,5 +1,5 @@
 import { View } from 'react-native';
-import { Settings, settingsKeyword, settingsSchema } from '~/db/schema.ts';
+import { Settings, settingsKeyword, settingsSchema } from '~/db/schema';
 import {
   Form,
   FormControl,
@@ -7,14 +7,14 @@ import {
   FormItem,
   FormLabel,
 } from '../sheard/form';
-import SelectTheme from './SelectTheme';
 import { PropsWithChildren } from 'react';
 import { settingsScreenString } from '~/lib/strings/settingsScreen';
 import { SettingsService } from '~/services/settings';
 import useFormSetup from '~/hooks/useFormSetup';
 
 type Props = PropsWithChildren & { data: Settings };
-export function SettingsForm({ data }: Props) {
+
+export function TimerForm({ data }: Props) {
   const convertObjectToForm = (obj: Settings): Settings => {
     return obj;
   };
@@ -37,9 +37,7 @@ export function SettingsForm({ data }: Props) {
           render={({ field: { onChange, value } }) => (
             <FormItem className="flex flex-row justify-between items-center">
               <FormLabel>{settingsScreenString.form.theme.title}</FormLabel>
-              <FormControl>
-                <SelectTheme value={value} onChange={onChange} />
-              </FormControl>
+              <FormControl />
             </FormItem>
           )}
         />

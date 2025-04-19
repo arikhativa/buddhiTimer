@@ -18,6 +18,7 @@ import { PortalHost } from '@rn-primitives/portal';
 import useSettingsQuery from '~/hooks/useSettingsQuery';
 import Toast from 'react-native-toast-message';
 import useToastConfig from '~/hooks/useToastConfig';
+import { TimerScreen } from './TimerScreen';
 
 const RootStack = createNativeStackNavigator({
   initialRouteName: 'Home',
@@ -27,6 +28,9 @@ const RootStack = createNativeStackNavigator({
       options: {
         headerShown: false,
       },
+    },
+    Timer: {
+      screen: TimerScreen,
     },
     Settings: {
       screen: SettingsScreen,

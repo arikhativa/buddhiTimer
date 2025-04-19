@@ -1,10 +1,5 @@
 import { eq } from 'drizzle-orm';
-import {
-  ID,
-  Settings,
-  settingsSchema,
-  settingsTable,
-} from '~/db/schema/settings';
+import { ID, Settings, settingsSchema, settingsTable } from '~/db/schema';
 import { db } from '~/hooks/useDatabase';
 
 const getQuery = db.query.settingsTable
