@@ -16,6 +16,8 @@ import { ErrorScreen } from './ErrorScreen';
 import { SettingsScreen } from './SettingsScreen';
 import { PortalHost } from '@rn-primitives/portal';
 import useSettingsQuery from '~/hooks/useSettingsQuery';
+import Toast from 'react-native-toast-message';
+import useToastConfig from '~/hooks/useToastConfig';
 
 const RootStack = createNativeStackNavigator({
   initialRouteName: 'Home',
@@ -63,6 +65,8 @@ export default function Layout({ showErrorScreen }: Props) {
   const { isDarkColorScheme, setColorScheme } = useColorScheme();
   const [isColorSchemeLoaded, setIsColorSchemeLoaded] = React.useState(false);
 
+  const toastConfig = useToastConfig(isDarkColorScheme);
+
   React.useEffect(() => {
     if (isColorSchemeLoaded && isSuccess) {
       setColorScheme(data.theme);
@@ -101,6 +105,7 @@ export default function Layout({ showErrorScreen }: Props) {
         <View className="flex-1" style={container}>
           <Navigation theme={isDarkColorScheme ? DARK_THEME : LIGHT_THEME} />
           <PortalHost />
+          <Toast config={toastConfig} />
         </View>
       )}
     </ThemeProvider>
