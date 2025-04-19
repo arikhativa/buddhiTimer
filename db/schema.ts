@@ -1,6 +1,10 @@
 import { relations } from 'drizzle-orm';
 import { int, sqliteTable, text } from 'drizzle-orm/sqlite-core';
-import { createInsertSchema, createSelectSchema } from 'drizzle-zod';
+import {
+  createInsertSchema,
+  createSelectSchema,
+  createUpdateSchema,
+} from 'drizzle-zod';
 import { z } from 'zod';
 
 export const ID = 1;
@@ -60,22 +64,32 @@ export const intervalBellSchema = createSelectSchema(intervalBellTable)
   })
   .extend({
     id: z.number(),
-    duration: z.number(),
+    duration: z.number().positive(),
   });
 
 export const intervalBellCreateSchema = createInsertSchema(intervalBellTable)
   .omit({
     id: true,
+  })
+  .extend({
+    timerId: z.number().positive(),
+    duration: z.number().positive(),
+  });
+
+export const intervalBellUpdateSchema = createUpdateSchema(intervalBellTable)
+  .omit({
+    id: true,
     timerId: true,
   })
   .extend({
-    duration: z.number(),
+    duration: z.number().positive().optional(),
   });
 
 export const intervalBellKeyword = 'intervalBell';
 
 export type IntervalBell = z.input<typeof intervalBellSchema>;
 export type IntervalBellCreate = z.input<typeof intervalBellCreateSchema>;
+export type IntervalBellUpdate = z.input<typeof intervalBellUpdateSchema>;
 
 ////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////// Timer /////////////////////////////////////
@@ -108,7 +122,18 @@ export const timerCreateSchema = createInsertSchema(timerTable)
     intervalBells: z.array(intervalBellCreateSchema),
   });
 
+export const timerUpdateSchema = createUpdateSchema(timerTable)
+  .omit({
+    id: true,
+  })
+  .extend({
+    duration: z.number().optional(),
+    warmUp: z.number().nullable().optional(),
+    intervalBells: z.array(intervalBellUpdateSchema).optional(),
+  });
+
 export const timerKeyword = 'timer';
 
 export type Timer = z.input<typeof timerSchema>;
 export type TimerCreate = z.input<typeof timerCreateSchema>;
+export type TimerUpdate = z.input<typeof timerUpdateSchema>;
