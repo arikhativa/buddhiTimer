@@ -1,39 +1,21 @@
 import { PropsWithChildren } from 'react';
 import { View } from 'react-native';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from '~/components/ui/card';
+import { TimerForm } from '~/components/timer/form';
 import { Text } from '~/components/ui/text';
-import { Bug } from '~/lib/icons/Bug';
-import { PackagePlus } from '~/lib/icons/PackagePlus';
-import { errorScreenString } from '~/lib/strings/errorScreen';
+import useTimerQuery from '~/hooks/useTimerQuery';
 
 type Props = PropsWithChildren & {};
 
 export function TimerScreen({}: Props) {
+  const { data } = useTimerQuery();
+
+  if (!data) {
+    return <Text>no data</Text>;
+  }
+
   return (
     <View className="flex-1 items-center justify-center">
-      <Card className="max-w-sm">
-        <CardHeader>
-          <View className="flex flex-row justify-between">
-            <CardTitle>{errorScreenString.title}</CardTitle>
-            <Bug />
-          </View>
-          <CardDescription>{errorScreenString.desc}</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Text>{errorScreenString.content}</Text>
-          <PackagePlus className="mt-4" />
-        </CardContent>
-        <CardFooter>
-          <Text>{errorScreenString.footer}</Text>
-        </CardFooter>
-      </Card>
+      <TimerForm data={data[0]} />
     </View>
   );
 }

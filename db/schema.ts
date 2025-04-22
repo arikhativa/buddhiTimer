@@ -58,14 +58,11 @@ export const intervalBellRelations = relations(
   }),
 );
 
-export const intervalBellSchema = createSelectSchema(intervalBellTable)
-  .omit({
-    timerId: true,
-  })
-  .extend({
-    id: z.number(),
-    duration: z.number().positive(),
-  });
+export const intervalBellSchema = createSelectSchema(intervalBellTable).extend({
+  id: z.number(),
+  timerId: z.number().positive(),
+  duration: z.number().positive(),
+});
 
 export const intervalBellCreateSchema = createInsertSchema(intervalBellTable)
   .omit({
@@ -76,14 +73,13 @@ export const intervalBellCreateSchema = createInsertSchema(intervalBellTable)
     duration: z.number().positive(),
   });
 
-export const intervalBellUpdateSchema = createUpdateSchema(intervalBellTable)
-  .omit({
-    id: true,
-    timerId: true,
-  })
-  .extend({
-    duration: z.number().positive().optional(),
-  });
+export const intervalBellUpdateSchema = createUpdateSchema(
+  intervalBellTable,
+).extend({
+  id: z.number(),
+  timerId: z.number().positive(),
+  duration: z.number().positive(),
+});
 
 export const intervalBellKeyword = 'intervalBell';
 
@@ -108,7 +104,7 @@ export const timerRelations = relations(timerTable, ({ many }) => ({
 export const timerSchema = createSelectSchema(timerTable).extend({
   id: z.number(),
   duration: z.number(),
-  warmUp: z.number().optional(),
+  warmUp: z.number().nullable(),
   intervalBells: z.array(intervalBellSchema),
 });
 
@@ -118,19 +114,16 @@ export const timerCreateSchema = createInsertSchema(timerTable)
   })
   .extend({
     duration: z.number(),
-    warmUp: z.number().optional(),
+    warmUp: z.number().nullable(),
     intervalBells: z.array(intervalBellCreateSchema),
   });
 
-export const timerUpdateSchema = createUpdateSchema(timerTable)
-  .omit({
-    id: true,
-  })
-  .extend({
-    duration: z.number().optional(),
-    warmUp: z.number().nullable().optional(),
-    intervalBells: z.array(intervalBellUpdateSchema).optional(),
-  });
+export const timerUpdateSchema = createUpdateSchema(timerTable).extend({
+  id: z.number(),
+  duration: z.number(),
+  warmUp: z.number().nullable(),
+  intervalBells: z.array(intervalBellUpdateSchema),
+});
 
 export const timerKeyword = 'timer';
 

@@ -6,6 +6,11 @@ CREATE TABLE `intervalBell_table` (
 	FOREIGN KEY (`timerId`) REFERENCES `timer_table`(`id`) ON UPDATE no action ON DELETE cascade
 );
 --> statement-breakpoint
+CREATE TABLE `settings_table` (
+	`id` integer PRIMARY KEY NOT NULL,
+	`theme` text DEFAULT 'system' NOT NULL
+);
+--> statement-breakpoint
 CREATE TABLE `timer_table` (
 	`id` integer PRIMARY KEY NOT NULL,
 	`duration` integer NOT NULL,

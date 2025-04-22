@@ -1,25 +1,38 @@
-import { eq } from 'drizzle-orm';
+import { eq, inArray } from 'drizzle-orm';
 import { z } from 'zod';
 import {
   IntervalBell,
   IntervalBellCreate,
+  IntervalBellUpdate,
   intervalBellCreateSchema,
+  intervalBellSchema,
   intervalBellTable,
   intervalBellUpdateSchema,
 } from '~/db/schema';
 import { db, Transaction } from '~/hooks/useDatabase';
 
 export class IntervalBellService {
+  static async getMany(
+    timerId: IntervalBell['timerId'],
+    tx?: Transaction,
+  ): Promise<IntervalBell[]> {
+    const src = tx || db;
+    const raw = await src.query.intervalBellTable.findMany({
+      where: intervalBell => eq(intervalBell.timerId, timerId),
+    });
+
+    return z.array(intervalBellSchema).parse(raw);
+  }
+
   static async create(
-    timerId: number,
     objs: IntervalBellCreate[],
-    ts?: Transaction,
+    tx?: Transaction,
   ): Promise<void> {
     const parsed = z
       .array(intervalBellCreateSchema)
-      .parse(objs.map(e => ({ ...e, timerId })));
+      .parse(objs.map(e => ({ ...e })));
 
-    const src = ts || db;
+    const src = tx || db;
 
     const ret = await src
       .insert(intervalBellTable)
@@ -32,19 +45,72 @@ export class IntervalBellService {
   }
 
   static async update(
-    id: IntervalBell['id'],
-    obj: IntervalBell,
-  ): Promise<IntervalBell | undefined> {
-    const parsed = intervalBellUpdateSchema.parse(obj);
+    objs: IntervalBellUpdate[],
+    tx?: Transaction,
+  ): Promise<void> {
+    const parsed = z
+      .array(intervalBellUpdateSchema)
+      .parse(objs.map(e => ({ ...e })));
 
-    return db.transaction(async tx => {
-      const updated = await tx
+    const src = tx || db;
+
+    for (const e of parsed) {
+      const ret = await src
         .update(intervalBellTable)
-        .set(parsed)
-        .where(eq(intervalBellTable.id, id))
+        .set(e)
+        .where(eq(intervalBellTable.id, e.id))
         .returning();
 
-      return result;
+      if (!ret || !ret.length) {
+        throw new Error('Failed to create');
+      }
+    }
+  }
+
+  static async delete(
+    ids: IntervalBell['id'][],
+    tx?: Transaction,
+  ): Promise<void> {
+    const src = tx || db;
+
+    await src
+      .delete(intervalBellTable)
+      .where(inArray(intervalBellTable.id, ids))
+      .returning();
+  }
+
+  static async upsert(
+    objs: IntervalBellUpdate[] | IntervalBellCreate[],
+    tx?: Transaction,
+  ): Promise<void> {
+    if (!objs || !objs.length) return;
+    const createList: IntervalBellCreate[] = [];
+    const updateList: IntervalBellUpdate[] = [];
+
+    objs.forEach(e => {
+      if ((e as IntervalBell).id) {
+        updateList.push(e as IntervalBellUpdate);
+      } else {
+        createList.push(e as IntervalBellCreate);
+      }
     });
+
+    const updateParsed = z
+      .array(intervalBellUpdateSchema)
+      .parse(objs.map(e => ({ ...e })));
+
+    const createParsed = z
+      .array(intervalBellCreateSchema)
+      .parse(objs.map(e => ({ ...e })));
+
+    const src = tx || db;
+
+    const list = await IntervalBellService.getMany(objs[0].timerId);
+    const allIds = list.map(e => e.id);
+    const updatedIds = updateParsed.map(e => e.id);
+    const idsToDelete = allIds.filter(e => !updatedIds.includes(e));
+    await IntervalBellService.delete(idsToDelete);
+    await IntervalBellService.update(updateParsed, src as Transaction);
+    await IntervalBellService.create(createParsed, src as Transaction);
   }
 }
