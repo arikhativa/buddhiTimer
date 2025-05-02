@@ -31,6 +31,7 @@ const RootStack = createNativeStackNavigator({
     },
     Timer: {
       screen: TimerScreen,
+      initialParams: {},
     },
     Settings: {
       screen: SettingsScreen,

@@ -1,21 +1,22 @@
-import { PropsWithChildren } from 'react';
+import { StaticScreenProps } from '@react-navigation/native';
 import { View } from 'react-native';
 import { TimerForm } from '~/components/timer/form';
-import { Text } from '~/components/ui/text';
 import useTimerQuery from '~/hooks/useTimerQuery';
 
-type Props = PropsWithChildren & {};
+type Params = {
+  id: number;
+};
 
-export function TimerScreen({}: Props) {
-  const { data } = useTimerQuery();
+type Props = StaticScreenProps<Params>;
 
-  if (!data) {
-    return <Text>no data</Text>;
-  }
+export function TimerScreen({ route }: Props) {
+  const { id } = route.params;
+
+  const { data } = useTimerQuery(id);
 
   return (
     <View className="flex-1 items-center justify-center">
-      <TimerForm data={data[0]} />
+      <TimerForm data={data} />
     </View>
   );
 }

@@ -13,10 +13,7 @@ import { IntervalBellService } from './intervalBell';
 import { z } from 'zod';
 
 export class TimerService {
-  static async getById(
-    id: number,
-    tx?: Transaction,
-  ): Promise<Timer | undefined> {
+  static async getById(id: number, tx?: Transaction): Promise<Timer> {
     const src = tx || db;
     const raw = await src.query.timerTable.findFirst({
       where: timer => eq(timer.id, id),
@@ -39,7 +36,7 @@ export class TimerService {
     return z.array(timerSchema).parse(raw);
   }
 
-  static async create(obj: TimerCreate): Promise<Timer | undefined> {
+  static async create(obj: TimerCreate): Promise<Timer> {
     const parsed = timerCreateSchema.parse(obj);
     delete parsed.intervalBells;
     console.log('parsed', parsed);

@@ -1,5 +1,11 @@
 import { View } from 'react-native';
-import { Timer, timerKeyword, timerSchema, TimerUpdate } from '~/db/schema';
+import {
+  Timer,
+  TimerCreate,
+  timerKeyword,
+  timerSchema,
+  TimerUpdate,
+} from '~/db/schema';
 import {
   Form,
   FormControl,
@@ -14,21 +20,32 @@ import InputNumber from '../sheard/InputNumber';
 import { Text } from '../ui/text';
 
 type Props = PropsWithChildren & { data?: Timer };
+type FormType = TimerCreate | TimerUpdate;
 
 export function TimerForm({ data }: Props) {
-  const convertObjectToForm = (obj: TimerUpdate): TimerUpdate => {
+  const convertObjectToForm = (obj: FormType): FormType => {
     return obj;
   };
 
-  const { form } = useFormSetup<TimerUpdate, TimerUpdate>({
+  const mutate = (v: FormType) => {
+    if (data) {
+      return TimerService.update(v as TimerUpdate) as Promise<FormType>;
+    } else {
+      return TimerService.create(v as TimerCreate) as Promise<FormType>;
+    }
+  };
+
+  const { form } = useFormSetup<FormType, FormType>({
     schema: timerSchema,
-    mutate: TimerService.update,
+    mutate,
     convertObjectToForm,
     queryKeyword: timerKeyword,
     defaultValues: data || {
       duration: 0,
+      warmUp: null,
+      intervalBells: [],
     },
-    isAutoSubmit: true,
+    isAutoSubmit: false,
   });
 
   return (
