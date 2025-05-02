@@ -17,12 +17,16 @@ export function HomeScreen() {
             title="Timer"
             icon={Timer}
             onPress={() => {
-              navigation.navigate('Timer');
+              navigation.navigate('Timer', {});
             }}
           />
         </View>
         <View className="w-1/2 p-2">
-          <CardButton disabled title="Presets" icon={SquareStack} />
+          <CardButton
+            title="Presets"
+            icon={SquareStack}
+            onPress={() => navigation.navigate('Presets')}
+          />
         </View>
         <View className="w-1/2 p-2">
           <CardButton

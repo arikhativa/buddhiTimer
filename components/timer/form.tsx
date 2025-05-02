@@ -18,6 +18,8 @@ import { TimerService } from '~/services/timer';
 import useFormSetup from '~/hooks/useFormSetup';
 import InputNumber from '../sheard/InputNumber';
 import { Text } from '../ui/text';
+import { Button } from '../ui/button';
+import { Plus } from '~/lib/icons/Plus';
 
 type Props = PropsWithChildren & { data?: Timer };
 type FormType = TimerCreate | TimerUpdate;
@@ -35,12 +37,13 @@ export function TimerForm({ data }: Props) {
     }
   };
 
-  const { form } = useFormSetup<FormType, FormType>({
+  const { form, submit } = useFormSetup<FormType, FormType>({
     schema: timerSchema,
     mutate,
     convertObjectToForm,
     queryKeyword: timerKeyword,
     defaultValues: data || {
+      id: 0,
       duration: 0,
       warmUp: null,
       intervalBells: [],
@@ -79,6 +82,15 @@ export function TimerForm({ data }: Props) {
             </FormItem>
           )}
         />
+        <Button
+          onPress={() => {
+            if (form.formState.errors) {
+              console.error('form.formState.errors', form.formState.errors);
+            }
+            submit();
+          }}>
+          <Plus />
+        </Button>
       </Form>
     </View>
   );

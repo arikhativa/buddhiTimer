@@ -1,25 +1,22 @@
 import { useNavigation } from '@react-navigation/native';
 import { Text, View } from 'react-native';
-import { CardButton } from '~/components/home/cardButton';
 import { Button } from '~/components/ui/button';
-import useTimerQuery from '~/hooks/useTimerQuery';
-import { ChartNoAxesCombined } from '~/lib/icons/ChartNoAxesCombined';
+import { Timer } from '~/db/schema';
+import useTimerListQuery from '~/hooks/useTimerListQuery';
 import { Plus } from '~/lib/icons/Plus';
-import { Settings } from '~/lib/icons/Settings';
-import { SquareStack } from '~/lib/icons/SquareStack';
-import { Timer } from '~/lib/icons/Timer';
-import { CRUD_MODE } from '~/lib/types/sheard';
+
+function Line({ data }: { data: Timer }) {
+  return <Text>{data.id}</Text>;
+}
 
 export function PresetsScreen() {
   const navigation = useNavigation();
-  const { data } = useTimerQuery();
+  const { data } = useTimerListQuery();
   if (!data) {
     return (
       <Button
         onPress={() => {
-          navigation.navigate('Timer', {
-            mode: CRUD_MODE.CREATE,
-          });
+          navigation.navigate('Timer', {});
         }}
         variant={'outline'}
         size={'icon'}>
@@ -27,34 +24,12 @@ export function PresetsScreen() {
       </Button>
     );
   }
+
   return (
-    <View className="flex flex-1 justify-center items-center">
-      <View className="flex flex-row flex-wrap justify-between w-full px-4">
-        <View className="w-1/2 p-2">
-          <CardButton
-            title="Timer"
-            icon={Timer}
-            onPress={() => {
-              navigation.navigate('Timer');
-            }}
-          />
-        </View>
-        <View className="w-1/2 p-2">
-          <CardButton disabled title="Presets" icon={SquareStack} />
-        </View>
-        <View className="w-1/2 p-2">
-          <CardButton
-            title="Settings"
-            icon={Settings}
-            onPress={() => {
-              navigation.navigate('Settings');
-            }}
-          />
-        </View>
-        <View className="w-1/2 p-2">
-          <CardButton disabled title="Statistics" icon={ChartNoAxesCombined} />
-        </View>
-      </View>
+    <View>
+      {data.map(e => {
+        return <Line key={e.id} data={e} />;
+      })}
     </View>
   );
 }

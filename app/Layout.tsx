@@ -19,6 +19,7 @@ import useSettingsQuery from '~/hooks/useSettingsQuery';
 import Toast from 'react-native-toast-message';
 import useToastConfig from '~/hooks/useToastConfig';
 import { TimerScreen } from './TimerScreen';
+import { PresetsScreen } from './PresetsScreen';
 
 const RootStack = createNativeStackNavigator({
   initialRouteName: 'Home',
@@ -33,6 +34,10 @@ const RootStack = createNativeStackNavigator({
       screen: TimerScreen,
       initialParams: {},
     },
+    Presets: {
+      screen: PresetsScreen,
+    },
+
     Settings: {
       screen: SettingsScreen,
     },

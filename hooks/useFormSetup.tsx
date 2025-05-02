@@ -84,5 +84,5 @@ export default function useFormSetup<T, FORM extends FieldValues>({
     }
   }, [formState, isAutoSubmit, submit, mutation.isPending, mutation.isError]);
 
-  return { form, mutation };
+  return { form, mutation, submit };
 }

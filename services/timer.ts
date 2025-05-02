@@ -38,34 +38,27 @@ export class TimerService {
 
   static async create(obj: TimerCreate): Promise<Timer> {
     const parsed = timerCreateSchema.parse(obj);
-    delete parsed.intervalBells;
-    console.log('parsed', parsed);
-    const ret = await db.insert(timerTable).values(parsed);
-    console.log('ret', ret);
 
-    // return db.transaction(async tx => {
-    //   console.log('AA');
-    //   const test = await tx.run('SELECT 1+1 as result');
-    //   console.log('DB connection status:', test);
-    //   const ret = await tx.insert(timerTable).values(parsed).timeout(34);
-    //   console.log('QQ', ret);
-    //   // .returning({ id: timerTable.id });
+    return db.transaction(async tx => {
+      const ret = await tx
+        .insert(timerTable)
+        .values(parsed)
+        .returning({ id: timerTable.id });
 
-    //   // console.log('A2', ret);
-    //   // if (!ret || !ret.length || !ret[0].id) {
-    //   //   throw new Error('Failed to create');
-    //   // }
-    //   //
-    //   // console.log('B');
-    //   // await IntervalBellService.create(parsed.intervalBells, tx);
-    //   //
-    //   // const result = await TimerService.getById(ret[0].id, tx);
-    //   // if (!result) {
-    //   //   throw new Error('Failed to retrieve object');
-    //   // }
-    //   // console.log('C');
-    //   // return result;
-    // });
+      if (!ret || !ret.length || !ret[0].id) {
+        throw new Error('Failed to create');
+      }
+
+      if (parsed.intervalBells && parsed.intervalBells.length) {
+        await IntervalBellService.create(parsed.intervalBells, tx);
+      }
+
+      const result = await TimerService.getById(ret[0].id, tx);
+      if (!result) {
+        throw new Error('Failed to retrieve object');
+      }
+      return result;
+    });
   }
 
   static async update(obj: TimerUpdate): Promise<Timer> {

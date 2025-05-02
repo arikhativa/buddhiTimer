@@ -4,7 +4,7 @@ import { TimerForm } from '~/components/timer/form';
 import useTimerQuery from '~/hooks/useTimerQuery';
 
 type Params = {
-  id: number;
+  id?: number;
 };
 
 type Props = StaticScreenProps<Params>;
