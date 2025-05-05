@@ -16,6 +16,7 @@ interface Props<T, FORM extends FieldValues> {
   convertObjectToForm: (obj: T) => FORM;
   defaultValues: DefaultValues<FORM>;
   isAutoSubmit?: boolean;
+  handleOnSuccess?: (data: T) => void;
 }
 
 export default function useFormSetup<T, FORM extends FieldValues>({
@@ -25,6 +26,7 @@ export default function useFormSetup<T, FORM extends FieldValues>({
   convertObjectToForm,
   defaultValues,
   isAutoSubmit,
+  handleOnSuccess,
 }: Props<T, FORM>) {
   const { saveSuccess, saveError } = useFormToast();
 
@@ -42,6 +44,7 @@ export default function useFormSetup<T, FORM extends FieldValues>({
 
     queryClient.invalidateQueries({ queryKey: [queryKeyword] });
     saveSuccess();
+    handleOnSuccess?.(data);
   };
 
   const mutationFn: MutationFunction<T, FORM> = async (values: FORM) => {
@@ -51,7 +54,7 @@ export default function useFormSetup<T, FORM extends FieldValues>({
   const mutation = useMutation<T, unknown, FORM>({
     mutationFn,
     onError: e => {
-      e && console.log(e);
+      e && console.error(e);
       saveError();
       if (isAutoSubmit) {
         form.reset(defaultValues);
@@ -69,10 +72,6 @@ export default function useFormSetup<T, FORM extends FieldValues>({
 
   useEffect(() => {
     if (!isAutoSubmit) return;
-    console.log('formState.isDirty', formState.isDirty);
-    console.log('formState.isValid', formState.isValid);
-    console.log('mutation.isError', mutation.isError);
-    console.log('mutation.isPending', mutation.isPending);
 
     if (
       formState.isDirty &&

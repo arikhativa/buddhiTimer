@@ -20,21 +20,28 @@ import InputNumber from '../sheard/InputNumber';
 import { Text } from '../ui/text';
 import { Button } from '../ui/button';
 import { Plus } from '~/lib/icons/Plus';
+import { Save } from '~/lib/icons/Save';
+import { useNavigation } from '@react-navigation/native';
 
 type Props = PropsWithChildren & { data?: Timer };
 type FormType = TimerCreate | TimerUpdate;
 
 export function TimerForm({ data }: Props) {
+  const navigation = useNavigation();
+  const isUpdate = !!data;
   const convertObjectToForm = (obj: FormType): FormType => {
     return obj;
   };
 
   const mutate = (v: FormType) => {
-    if (data) {
+    if (isUpdate) {
       return TimerService.update(v as TimerUpdate) as Promise<FormType>;
     } else {
       return TimerService.create(v as TimerCreate) as Promise<FormType>;
     }
+  };
+  const handleOnSuccess = (data: Timer) => {
+    navigation.navigate('Timer', { id: data.id });
   };
 
   const { form, submit } = useFormSetup<FormType, FormType>({
@@ -49,6 +56,7 @@ export function TimerForm({ data }: Props) {
       intervalBells: [],
     },
     isAutoSubmit: false,
+    handleOnSuccess,
   });
 
   return (
@@ -83,13 +91,14 @@ export function TimerForm({ data }: Props) {
           )}
         />
         <Button
+          variant={'outline'}
           onPress={() => {
-            if (form.formState.errors) {
+            if (!form.formState.isValid) {
               console.error('form.formState.errors', form.formState.errors);
             }
             submit();
           }}>
-          <Plus />
+          {isUpdate ? <Save /> : <Plus />}
         </Button>
       </Form>
     </View>

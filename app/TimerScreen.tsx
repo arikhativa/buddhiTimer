@@ -3,11 +3,11 @@ import { View } from 'react-native';
 import { TimerForm } from '~/components/timer/form';
 import useTimerQuery from '~/hooks/useTimerQuery';
 
-type Params = {
+export type TimerParams = {
   id?: number;
 };
 
-type Props = StaticScreenProps<Params>;
+type Props = StaticScreenProps<TimerParams>;
 
 export function TimerScreen({ route }: Props) {
   const { id } = route.params;

@@ -3,7 +3,7 @@ import {
   ThemeProvider,
   DefaultTheme,
   DarkTheme,
-  StaticParamList,
+  // StaticParamList,
 } from '@react-navigation/native';
 import * as React from 'react';
 import { Platform, StatusBar, StyleSheet, View } from 'react-native';
@@ -18,10 +18,17 @@ import { PortalHost } from '@rn-primitives/portal';
 import useSettingsQuery from '~/hooks/useSettingsQuery';
 import Toast from 'react-native-toast-message';
 import useToastConfig from '~/hooks/useToastConfig';
-import { TimerScreen } from './TimerScreen';
+import { TimerParams, TimerScreen } from './TimerScreen';
 import { PresetsScreen } from './PresetsScreen';
 
-const RootStack = createNativeStackNavigator({
+type RootStackParamList = {
+  Home: undefined;
+  Timer: TimerParams;
+  Presets: undefined;
+  Settings: undefined;
+};
+
+const RootStack = createNativeStackNavigator<RootStackParamList>({
   initialRouteName: 'Home',
   screens: {
     Home: {
@@ -33,18 +40,25 @@ const RootStack = createNativeStackNavigator({
     Timer: {
       screen: TimerScreen,
       initialParams: {},
+      options: ({ route }) => {
+        const id = route.params.id;
+        console.log('route.params', route.params);
+        if (id) {
+          return { title: `Timer ${id}` };
+        }
+        return {};
+      },
     },
     Presets: {
       screen: PresetsScreen,
     },
-
     Settings: {
       screen: SettingsScreen,
     },
   },
 });
 
-type RootStackParamList = StaticParamList<typeof RootStack>;
+// type RootStackParamList = StaticParamList<typeof RootStack>;
 
 declare global {
   namespace ReactNavigation {
