@@ -13,7 +13,7 @@ export default function useTimerQuery(id?: number) {
     staleTime: USE_QUERY_STALE_TIME,
     refetchOnWindowFocus: false,
     refetchOnMount: false,
-    enabled: true,
+    enabled: !!id,
   });
 
   return query;

@@ -1,5 +1,6 @@
 import { StaticScreenProps } from '@react-navigation/native';
 import { View } from 'react-native';
+import { Spinner } from '~/components/sheard/Spinner';
 import { TimerForm } from '~/components/timer/form';
 import useTimerQuery from '~/hooks/useTimerQuery';
 
@@ -12,11 +13,13 @@ type Props = StaticScreenProps<TimerParams>;
 export function TimerScreen({ route }: Props) {
   const { id } = route.params;
 
-  const { data } = useTimerQuery(id);
+  const query = useTimerQuery(id);
 
   return (
-    <View className="flex-1 items-center justify-center">
-      <TimerForm data={data} />
-    </View>
+    <Spinner query={query} allowEmpty>
+      <View className="flex-1 items-center justify-center">
+        <TimerForm data={query.data} />
+      </View>
+    </Spinner>
   );
 }
