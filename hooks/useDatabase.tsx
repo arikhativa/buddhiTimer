@@ -6,7 +6,7 @@ import { open, QueryResult } from '@op-engineering/op-sqlite';
 import * as schema from '~/db/schema.ts';
 import { SQLiteTransaction } from 'drizzle-orm/sqlite-core';
 import { ExtractTablesWithRelations } from 'drizzle-orm';
-// import { useEffect, useLayoutEffect } from 'react';
+import { useLayoutEffect } from 'react';
 
 export type Transaction = SQLiteTransaction<
   'async',
@@ -22,27 +22,32 @@ const opsqliteDb = open({
 export const db = drizzle(opsqliteDb, { schema });
 
 export function useDatabase() {
-  // async function listTables() {
-  //   const result = await db.run(
-  //     `SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%';`,
-  //   );
-  //
-  //   // `result` is a raw object; structure depends on op-sqlite. Here's how you might extract the names:
-  //   const tableNames = result.rows.map((row: any) => row.name);
-  //   console.log('Tables:', tableNames);
-  //   return tableNames;
-  // }
-  //
-  // useLayoutEffect(() => {
-  //   const f = async () => {
-  //     console.log('A');
-  //     await db.run(`DROP TABLE IF EXISTS intervalBell_table`);
-  //     await db.run(`DROP TABLE IF EXISTS settings_table`);
-  //     await db.run(`DROP TABLE IF EXISTS timer_table`);
-  //     console.log('Done');
-  //     await listTables();
-  //   };
-  //   f();
-  // });
+  async function listTables() {
+    // {
+    //   const result = await db.run(
+    //     `SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%';`,
+    //   );
+    //   console.log('result', result);
+    // }
+    // {
+    //   const result = await db.run(` DROP TABLE __drizzle_migrations`);
+    //
+    //   console.log('D', result);
+    // }
+    // {
+    //   const result = await db.run(` SELECT * FROM __drizzle_migrations`);
+    //   console.log('R', result);
+    // }
+  }
+
+  useLayoutEffect(() => {
+    const f = async () => {
+      // await db.run(`DROP TABLE IF EXISTS intervalBell_table`);
+      // await db.run(`DROP TABLE IF EXISTS settings_table`);
+      // await db.run(`DROP TABLE IF EXISTS timer_table`);
+      await listTables();
+    };
+    f();
+  });
   return useMigrations(db, migrations);
 }

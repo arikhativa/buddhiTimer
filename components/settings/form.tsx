@@ -15,14 +15,9 @@ import useFormSetup from '~/hooks/useFormSetup';
 
 type Props = PropsWithChildren & { data: Settings };
 export function SettingsForm({ data }: Props) {
-  const convertObjectToForm = (obj: Settings): Settings => {
-    return obj;
-  };
-
   const { form } = useFormSetup<Settings, Settings>({
     schema: settingsSchema,
     mutate: SettingsService.update,
-    convertObjectToForm,
     queryKeyword: settingsKeyword,
     defaultValues: data,
     isAutoSubmit: true,

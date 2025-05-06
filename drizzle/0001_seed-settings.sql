@@ -4,4 +4,3 @@ SELECT 1, 'system'
 WHERE NOT EXISTS (
   SELECT 1 FROM settings_table WHERE id = 1
 );
-

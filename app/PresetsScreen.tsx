@@ -22,7 +22,8 @@ function Line({ item, navigation }: { item: Timer; navigation: any }) {
 export function PresetsScreen() {
   const navigation = useNavigation();
   const { data } = useTimerListQuery();
-  if (!data) {
+
+  if (data && !data.length) {
     return (
       <Button
         onPress={() => {

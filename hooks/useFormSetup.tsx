@@ -66,22 +66,24 @@ export default function useFormSetup<TForm extends FieldValues, TData>({
     retryDelay: 1000,
   });
 
-  const formState = form.formState;
+  const { isDirty, isValid } = form.formState;
 
   const submit = form.handleSubmit(values => mutation.mutate(values));
 
   useEffect(() => {
     if (!isAutoSubmit) return;
 
-    if (
-      formState.isDirty &&
-      formState.isValid &&
-      !mutation.isPending &&
-      !mutation.isError
-    ) {
+    if (isDirty && isValid && !mutation.isPending && !mutation.isError) {
       submit();
     }
-  }, [formState, isAutoSubmit, submit, mutation.isPending, mutation.isError]);
+  }, [
+    isDirty,
+    isValid,
+    isAutoSubmit,
+    submit,
+    mutation.isPending,
+    mutation.isError,
+  ]);
 
   return { form, mutation, submit };
 }
