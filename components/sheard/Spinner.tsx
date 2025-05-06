@@ -1,5 +1,5 @@
 import { UseQueryResult } from '@tanstack/react-query';
-import { PropsWithChildren } from 'react';
+import { PropsWithChildren, useEffect, useState } from 'react';
 import { View } from 'react-native';
 import { Muted } from '../ui/typography';
 import { spinnerStrings } from '~/lib/strings/spinner';
@@ -11,6 +11,22 @@ type Props<T> = PropsWithChildren & {
 };
 
 export function Spinner<T>({ allowEmpty, query, children }: Props<T>) {
+  const [showSpinner, setShowSpinner] = useState(false);
+
+  useEffect(() => {
+    let timeout: ReturnType<typeof setTimeout>;
+
+    if (query.isLoading) {
+      timeout = setTimeout(() => {
+        setShowSpinner(true);
+      }, 500);
+    } else {
+      setShowSpinner(false);
+    }
+
+    return () => clearTimeout(timeout);
+  }, [query.isLoading]);
+
   if (query.isError) {
     return (
       <View className="flex-1 justify-center items-center">
@@ -19,7 +35,7 @@ export function Spinner<T>({ allowEmpty, query, children }: Props<T>) {
     );
   }
 
-  if (query.isLoading) {
+  if (query.isLoading && showSpinner) {
     return (
       <View className="flex-1 justify-center items-center">
         <Banana size={60} />

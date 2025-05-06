@@ -25,6 +25,7 @@ import { Save } from '~/lib/icons/Save';
 import { useNavigation } from '@react-navigation/native';
 import { BAD_ID } from '~/lib/constants';
 import { timerStrings } from '~/lib/strings/timer';
+import { useHeaderButtons } from '~/hooks/useHeaderButtons';
 
 type Props = PropsWithChildren & { data?: Timer };
 
@@ -32,6 +33,8 @@ type FormType = TimerUpdate | TimerCreate;
 export function TimerForm({ data }: Props) {
   const navigation = useNavigation();
   const isUpdate = !!data;
+
+  useHeaderButtons(isUpdate);
 
   const handleOnSuccess = (obj: Timer) => {
     navigation.navigate('Timer', { id: obj.id });

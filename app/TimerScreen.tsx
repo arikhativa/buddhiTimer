@@ -17,9 +17,7 @@ export function TimerScreen({ route }: Props) {
 
   return (
     <Spinner query={query} allowEmpty>
-      <View className="flex-1 items-center justify-center">
-        <TimerForm data={query.data} />
-      </View>
+      <TimerForm data={query.data} />
     </Spinner>
   );
 }
