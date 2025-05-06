@@ -9,37 +9,37 @@ import { DefaultValues, FieldValues, useForm } from 'react-hook-form';
 import { ZodType } from 'zod';
 import useFormToast from './useFormToast';
 
-interface Props<T, FORM extends FieldValues> {
+interface Props<TForm extends FieldValues, TData> {
   schema: ZodType;
-  mutate: (v: FORM) => Promise<T>;
+  mutate: (v: TForm) => Promise<TData>;
   queryKeyword: string;
-  convertObjectToForm: (obj: T) => FORM;
-  defaultValues: DefaultValues<FORM>;
+  defaultValues: DefaultValues<TForm>;
   isAutoSubmit?: boolean;
-  handleOnSuccess?: (data: T) => void;
+  handleOnSuccess?: (data: TData) => void;
+  convertDataToForm?: (data: TData) => TForm;
 }
 
-export default function useFormSetup<T, FORM extends FieldValues>({
+export default function useFormSetup<TForm extends FieldValues, TData>({
   schema,
   mutate,
   queryKeyword,
-  convertObjectToForm,
   defaultValues,
   isAutoSubmit,
   handleOnSuccess,
-}: Props<T, FORM>) {
+  convertDataToForm = (obj: TData) => obj as unknown as TForm,
+}: Props<TForm, TData>) {
   const { saveSuccess, saveError } = useFormToast();
 
-  const form = useForm<FORM>({
+  const form = useForm({
     resolver: zodResolver(schema),
     defaultValues,
   });
 
   const queryClient = useQueryClient();
 
-  const onSuccess = (data: T, _params: FORM) => {
+  const onSuccess = (data: TData, _params: TForm) => {
     if (data) {
-      form.reset(convertObjectToForm(data));
+      form.reset(convertDataToForm(data));
     }
 
     queryClient.invalidateQueries({ queryKey: [queryKeyword] });
@@ -47,14 +47,14 @@ export default function useFormSetup<T, FORM extends FieldValues>({
     handleOnSuccess?.(data);
   };
 
-  const mutationFn: MutationFunction<T, FORM> = async (values: FORM) => {
+  const mutationFn: MutationFunction<TData, TForm> = async (values: TForm) => {
     return mutate(values);
   };
 
-  const mutation = useMutation<T, unknown, FORM>({
+  const mutation = useMutation<TData, unknown, TForm>({
     mutationFn,
     onError: e => {
-      e && console.error(e);
+      e && console.error('Form Submit Error: ', e);
       saveError();
       if (isAutoSubmit) {
         form.reset(defaultValues);

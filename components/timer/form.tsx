@@ -2,9 +2,10 @@ import { View } from 'react-native';
 import {
   Timer,
   TimerCreate,
+  timerCreateSchema,
   timerKeyword,
-  timerSchema,
   TimerUpdate,
+  timerUpdateSchema,
 } from '~/db/schema';
 import {
   Form,
@@ -22,35 +23,34 @@ import { Button } from '../ui/button';
 import { Plus } from '~/lib/icons/Plus';
 import { Save } from '~/lib/icons/Save';
 import { useNavigation } from '@react-navigation/native';
+import { BAD_ID } from '~/lib/constants';
+import { timerStrings } from '~/lib/strings/timer';
 
 type Props = PropsWithChildren & { data?: Timer };
-type FormType = TimerCreate | TimerUpdate;
 
+type FormType = TimerUpdate | TimerCreate;
 export function TimerForm({ data }: Props) {
   const navigation = useNavigation();
   const isUpdate = !!data;
-  const convertObjectToForm = (obj: FormType): FormType => {
-    return obj;
+
+  const handleOnSuccess = (obj: Timer) => {
+    navigation.navigate('Timer', { id: obj.id });
   };
 
   const mutate = (v: FormType) => {
     if (isUpdate) {
-      return TimerService.update(v as TimerUpdate) as Promise<FormType>;
+      return TimerService.update(v as TimerUpdate);
     } else {
-      return TimerService.create(v as TimerCreate) as Promise<FormType>;
+      return TimerService.create(v as TimerCreate);
     }
   };
-  const handleOnSuccess = (data: Timer) => {
-    navigation.navigate('Timer', { id: data.id });
-  };
 
-  const { form, submit } = useFormSetup<FormType, FormType>({
-    schema: timerSchema,
+  const { form, submit } = useFormSetup<FormType, Timer>({
+    schema: isUpdate ? timerUpdateSchema : timerCreateSchema,
     mutate,
-    convertObjectToForm,
     queryKeyword: timerKeyword,
     defaultValues: data || {
-      id: 0,
+      id: BAD_ID,
       duration: 0,
       warmUp: null,
       intervalBells: [],
@@ -67,7 +67,7 @@ export function TimerForm({ data }: Props) {
           name="duration"
           render={({ field: { onChange, value } }) => (
             <FormItem className="flex flex-row justify-between items-center">
-              <FormLabel>Duration</FormLabel>
+              <FormLabel>{timerStrings.form.duration}</FormLabel>
               <FormControl>
                 <InputNumber onChange={onChange} value={value} />
               </FormControl>
@@ -79,12 +79,12 @@ export function TimerForm({ data }: Props) {
           name="warmUp"
           render={({ field: { onChange, value } }) => (
             <FormItem className="flex flex-row justify-between items-center">
-              <FormLabel>warmUp</FormLabel>
+              <FormLabel>{timerStrings.form.warmUp}</FormLabel>
               <FormControl>
                 {value !== null ? (
                   <InputNumber onChange={onChange} value={value} />
                 ) : (
-                  <Text> no warmup</Text>
+                  <Text> {timerStrings.form.missingWarmUp}</Text>
                 )}
               </FormControl>
             </FormItem>
@@ -94,7 +94,7 @@ export function TimerForm({ data }: Props) {
           variant={'outline'}
           onPress={() => {
             if (!form.formState.isValid) {
-              console.error('form.formState.errors', form.formState.errors);
+              console.log('form.formState.errors', form.formState.errors);
             }
             submit();
           }}>

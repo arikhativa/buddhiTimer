@@ -42,7 +42,6 @@ const RootStack = createNativeStackNavigator<RootStackParamList>({
       initialParams: {},
       options: ({ route }) => {
         const id = route.params.id;
-        console.log('route.params', route.params);
         if (id) {
           return { title: `Timer ${id}` };
         }

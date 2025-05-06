@@ -19,3 +19,4 @@ export const NAV_THEME = {
 
 export const MINUTE = 60 * 1;
 export const USE_QUERY_STALE_TIME = 5 * MINUTE;
+export const BAD_ID = 0;
