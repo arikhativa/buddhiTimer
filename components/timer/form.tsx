@@ -14,7 +14,7 @@ import {
   FormItem,
   FormLabel,
 } from '../sheard/form';
-import { useEffect, PropsWithChildren } from 'react';
+import { useEffect, PropsWithChildren, useState } from 'react';
 import { TimerService } from '~/services/timer';
 import useFormSetup from '~/hooks/useFormSetup';
 import InputNumber from '../sheard/InputNumber';
@@ -26,6 +26,8 @@ import { useNavigation } from '@react-navigation/native';
 import { BAD_ID } from '~/lib/constants';
 import { timerStrings } from '~/lib/strings/timer';
 import TimerMenu from './TimerMenu';
+import { H1, Large } from '../ui/typography';
+import { TimerWheel } from './TimerWheel';
 
 type Props = PropsWithChildren & { data?: Timer };
 type FormType = TimerUpdate | TimerCreate;
@@ -69,8 +71,11 @@ export function TimerForm({ data }: Props) {
     });
   }, [isUpdate, data?.id, navigation]);
 
+  const [vv, svv] = useState(60);
+
   return (
     <View className="px-8 mt-20">
+      <TimerWheel value={vv} onValueChange={svv} />
       <Form {...form}>
         <FormField
           control={form.control}
@@ -79,7 +84,7 @@ export function TimerForm({ data }: Props) {
             <FormItem className="flex flex-row justify-between items-center">
               <FormLabel>{timerStrings.form.duration}</FormLabel>
               <FormControl>
-                <InputNumber onChange={onChange} value={value} />
+                {<InputNumber onChange={onChange} value={value} />}
               </FormControl>
             </FormItem>
           )}
