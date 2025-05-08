@@ -8,10 +8,12 @@ import { useEffect } from 'react';
 import { DefaultValues, FieldValues, useForm } from 'react-hook-form';
 import { ZodType } from 'zod';
 import useFormToast from './useFormToast';
+import { useNavigation } from '@react-navigation/native';
 
 interface Props<TForm extends FieldValues, TData> {
   schema: ZodType;
   mutate: (v: TForm) => Promise<TData>;
+  onDelete: (obj: TData) => Promise<void>;
   queryKeyword: string;
   defaultValues: DefaultValues<TForm>;
   isAutoSubmit?: boolean;
@@ -22,13 +24,15 @@ interface Props<TForm extends FieldValues, TData> {
 export default function useFormSetup<TForm extends FieldValues, TData>({
   schema,
   mutate,
+  onDelete,
   queryKeyword,
   defaultValues,
   isAutoSubmit,
   handleOnSuccess,
   convertDataToForm = (obj: TData) => obj as unknown as TForm,
 }: Props<TForm, TData>) {
-  const { saveSuccess, saveError } = useFormToast();
+  const navigation = useNavigation();
+  const { deleteSuccess, saveSuccess, saveError } = useFormToast();
 
   const form = useForm({
     resolver: zodResolver(schema),
@@ -37,12 +41,15 @@ export default function useFormSetup<TForm extends FieldValues, TData>({
 
   const queryClient = useQueryClient();
 
+  const invalid = () => {
+    queryClient.invalidateQueries({ queryKey: [queryKeyword] });
+  };
+
   const onSuccess = (data: TData, _params: TForm) => {
     if (data) {
       form.reset(convertDataToForm(data));
     }
-
-    queryClient.invalidateQueries({ queryKey: [queryKeyword] });
+    invalid();
     saveSuccess();
     handleOnSuccess?.(data);
   };
@@ -66,6 +73,19 @@ export default function useFormSetup<TForm extends FieldValues, TData>({
     retryDelay: 1000,
   });
 
+  const deleteMutation = useMutation({
+    mutationFn: onDelete,
+    onSuccess: () => {
+      deleteSuccess();
+      invalid();
+      navigation.goBack(); // or navigate elsewhere
+    },
+    onError: e => {
+      e && console.error('Form delete Error: ', e);
+      saveError();
+    },
+  });
+
   const { isDirty, isValid } = form.formState;
 
   const submit = form.handleSubmit(values => mutation.mutate(values));
@@ -85,5 +105,5 @@ export default function useFormSetup<TForm extends FieldValues, TData>({
     mutation.isError,
   ]);
 
-  return { form, mutation, submit };
+  return { form, mutation, submit, deleteMutation };
 }

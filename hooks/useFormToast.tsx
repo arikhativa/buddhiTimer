@@ -16,5 +16,12 @@ export default function useFormToast() {
     });
   };
 
-  return { saveSuccess, saveError };
+  const deleteSuccess = () => {
+    Toast.show({
+      type: 'success',
+      text1: toastString.deleteSuccess,
+    });
+  };
+  deleteSuccess;
+  return { saveSuccess, saveError, deleteSuccess };
 }

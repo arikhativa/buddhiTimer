@@ -14,7 +14,7 @@ import {
   FormItem,
   FormLabel,
 } from '../sheard/form';
-import { PropsWithChildren } from 'react';
+import { useEffect, PropsWithChildren } from 'react';
 import { TimerService } from '~/services/timer';
 import useFormSetup from '~/hooks/useFormSetup';
 import InputNumber from '../sheard/InputNumber';
@@ -25,16 +25,14 @@ import { Save } from '~/lib/icons/Save';
 import { useNavigation } from '@react-navigation/native';
 import { BAD_ID } from '~/lib/constants';
 import { timerStrings } from '~/lib/strings/timer';
-import { useHeaderButtons } from '~/hooks/useHeaderButtons';
+import TimerMenu from './TimerMenu';
 
 type Props = PropsWithChildren & { data?: Timer };
-
 type FormType = TimerUpdate | TimerCreate;
+
 export function TimerForm({ data }: Props) {
   const navigation = useNavigation();
   const isUpdate = !!data;
-
-  useHeaderButtons(isUpdate);
 
   const handleOnSuccess = (obj: Timer) => {
     navigation.navigate('Timer', { id: obj.id });
@@ -48,9 +46,10 @@ export function TimerForm({ data }: Props) {
     }
   };
 
-  const { form, submit } = useFormSetup<FormType, Timer>({
+  const { form, submit, deleteMutation } = useFormSetup<FormType, Timer>({
     schema: isUpdate ? timerUpdateSchema : timerCreateSchema,
     mutate,
+    onDelete: (obj: Timer) => TimerService.delete(obj.id),
     queryKeyword: timerKeyword,
     defaultValues: data || {
       id: BAD_ID,
@@ -61,6 +60,14 @@ export function TimerForm({ data }: Props) {
     isAutoSubmit: false,
     handleOnSuccess,
   });
+
+  useEffect(() => {
+    navigation.setOptions({
+      headerRight: isUpdate
+        ? () => <TimerMenu onDelete={() => deleteMutation.mutate(data)} />
+        : undefined,
+    });
+  }, [isUpdate, data?.id, navigation]);
 
   return (
     <View className="px-8 mt-20">

@@ -86,4 +86,24 @@ export class TimerService {
       return result;
     });
   }
+
+  static async delete(id: Timer['id']): Promise<void> {
+    await db.transaction(async tx => {
+      const obj = await TimerService.getById(id, tx);
+
+      const ret = await tx
+        .delete(timerTable)
+        .where(eq(timerTable.id, id))
+        .returning();
+
+      if (!ret || !ret.length) {
+        throw new Error('Failed to delete');
+      }
+
+      await IntervalBellService.delete(
+        obj.intervalBells.map(e => e.id),
+        tx,
+      );
+    });
+  }
 }
