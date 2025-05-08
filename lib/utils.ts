@@ -17,3 +17,14 @@ export function formatSeconds(seconds: number): string {
   const pad = (n: number) => n.toString().padStart(2, '0');
   return `${pad(hrs)}:${pad(mins)}:${pad(secs)}`;
 }
+
+export function debounce<T extends (...args: any[]) => void>(
+  fn: T,
+  delay: number,
+): (...args: Parameters<T>) => void {
+  let timer: ReturnType<typeof setTimeout>;
+  return (...args: Parameters<T>) => {
+    clearTimeout(timer);
+    timer = setTimeout(() => fn(...args), delay);
+  };
+}

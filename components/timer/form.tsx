@@ -1,4 +1,5 @@
 import { View } from 'react-native';
+import { eventEmitter } from '~/lib/events';
 import {
   Timer,
   TimerCreate,
@@ -14,7 +15,7 @@ import {
   FormItem,
   FormLabel,
 } from '../sheard/form';
-import { useEffect, PropsWithChildren, useState } from 'react';
+import { useEffect, PropsWithChildren } from 'react';
 import { TimerService } from '~/services/timer';
 import useFormSetup from '~/hooks/useFormSetup';
 import InputNumber from '../sheard/InputNumber';
@@ -26,8 +27,7 @@ import { useNavigation } from '@react-navigation/native';
 import { BAD_ID } from '~/lib/constants';
 import { timerStrings } from '~/lib/strings/timer';
 import TimerMenu from './TimerMenu';
-import { H1, Large } from '../ui/typography';
-import { TimerWheel } from './TimerWheel';
+import { formatSeconds } from '~/lib/utils';
 
 type Props = PropsWithChildren & { data?: Timer };
 type FormType = TimerUpdate | TimerCreate;
@@ -71,20 +71,33 @@ export function TimerForm({ data }: Props) {
     });
   }, [isUpdate, data?.id, navigation]);
 
-  const [vv, svv] = useState(60);
+  useEffect(() => {
+    const sub = (v: number) => {
+      form.setValue('duration', v, { shouldValidate: true });
+    };
+    eventEmitter.on('timerWheelValue', sub);
+
+    return () => {
+      eventEmitter.off('timerWheelValue');
+    };
+  }, []);
 
   return (
     <View className="px-8 mt-20">
-      <TimerWheel value={vv} onValueChange={svv} />
       <Form {...form}>
         <FormField
           control={form.control}
           name="duration"
-          render={({ field: { onChange, value } }) => (
+          render={({ field: { value } }) => (
             <FormItem className="flex flex-row justify-between items-center">
               <FormLabel>{timerStrings.form.duration}</FormLabel>
               <FormControl>
-                {<InputNumber onChange={onChange} value={value} />}
+                <Button
+                  onPress={() => {
+                    navigation.navigate('TimerWheel', { value: value });
+                  }}>
+                  <Text>{formatSeconds(value)}</Text>
+                </Button>
               </FormControl>
             </FormItem>
           )}

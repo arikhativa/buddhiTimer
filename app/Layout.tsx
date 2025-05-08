@@ -20,10 +20,12 @@ import Toast from 'react-native-toast-message';
 import useToastConfig from '~/hooks/useToastConfig';
 import { TimerParams, TimerScreen } from './TimerScreen';
 import { PresetsScreen } from './PresetsScreen';
+import { TimerWheelParams, TimerWheelScreen } from './TimerWheelScreen';
 
 type RootStackParamList = {
   Home: undefined;
   Timer: TimerParams;
+  TimerWheel: TimerWheelParams;
   Presets: undefined;
   Settings: undefined;
 };
@@ -46,6 +48,12 @@ const RootStack = createNativeStackNavigator<RootStackParamList>({
           return { title: `Timer ${id}` };
         }
         return {};
+      },
+    },
+    TimerWheel: {
+      screen: TimerWheelScreen,
+      options: {
+        title: '',
       },
     },
     Presets: {

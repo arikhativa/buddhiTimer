@@ -1,15 +1,9 @@
 import { useNavigation } from '@react-navigation/native';
-import {
-  FlatList,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import { FlatList, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { Spinner } from '~/components/sheard/Spinner';
 import { Button } from '~/components/ui/button';
 import { Separator } from '~/components/ui/separator';
-import { H1, H2, Large, Muted, P } from '~/components/ui/typography';
+import { Large, Muted } from '~/components/ui/typography';
 import { Timer } from '~/db/schema';
 import useTimerListQuery from '~/hooks/useTimerListQuery';
 import { Plus } from '~/lib/icons/Plus';

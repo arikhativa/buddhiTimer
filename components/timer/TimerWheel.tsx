@@ -3,8 +3,10 @@ import WheelPicker from '@quidone/react-native-wheel-picker';
 import { View } from 'react-native';
 import { H1, H3 } from '../ui/typography';
 import { sheardStrings } from '~/lib/strings/sheard';
+import { cn } from '~/lib/utils';
 
 type Props = PropsWithChildren & {
+  className?: string;
   onValueChange: (v: number) => void;
   value: number;
 };
@@ -32,7 +34,7 @@ function Col() {
 
 const WIDTH = 80;
 
-export function TimerWheel({ onValueChange, value }: Props) {
+export function TimerWheel({ className, onValueChange, value }: Props) {
   const initialHour = Math.floor(value / 3600);
   const initialMin = Math.floor((value % 3600) / 60);
   const initialSec = value % 60;
@@ -47,10 +49,10 @@ export function TimerWheel({ onValueChange, value }: Props) {
   }, [hour, min, sec, onValueChange]);
 
   return (
-    <View className="flex ">
+    <View className={cn(className, 'flex')}>
       <View className="justify-center flex-row gap-4">
         <View className="w-30">
-          <H3>{sheardStrings.time.hours}</H3>
+          <H3 className="self-center">{sheardStrings.time.hours}</H3>
           <WheelPicker
             data={list24}
             width={WIDTH}
@@ -60,7 +62,7 @@ export function TimerWheel({ onValueChange, value }: Props) {
         </View>
         <Col />
         <View className="w-30">
-          <H3>{sheardStrings.time.minutes}</H3>
+          <H3 className="self-center">{sheardStrings.time.minutes}</H3>
           <WheelPicker
             data={list60}
             value={min}
@@ -70,7 +72,7 @@ export function TimerWheel({ onValueChange, value }: Props) {
         </View>
         <Col />
         <View className="w-30">
-          <H3>{sheardStrings.time.seconds}</H3>
+          <H3 className="self-center">{sheardStrings.time.seconds}</H3>
           <WheelPicker
             data={list60}
             value={sec}

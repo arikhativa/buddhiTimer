@@ -9,6 +9,7 @@ import { DefaultValues, FieldValues, useForm } from 'react-hook-form';
 import { ZodType } from 'zod';
 import useFormToast from './useFormToast';
 import { useNavigation } from '@react-navigation/native';
+import { timerKeyword } from '~/db/schema';
 
 interface Props<TForm extends FieldValues, TData> {
   schema: ZodType;
@@ -42,7 +43,7 @@ export default function useFormSetup<TForm extends FieldValues, TData>({
   const queryClient = useQueryClient();
 
   const invalid = () => {
-    queryClient.invalidateQueries({ queryKey: [queryKeyword] });
+    queryClient.refetchQueries({ queryKey: [queryKeyword] });
   };
 
   const onSuccess = (data: TData, _params: TForm) => {
