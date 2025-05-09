@@ -1,4 +1,4 @@
-import { PropsWithChildren, useEffect, useState } from 'react';
+import { PropsWithChildren, memo, useEffect, useState } from 'react';
 import WheelPicker from '@quidone/react-native-wheel-picker';
 import { View } from 'react-native';
 import { H1, H3 } from '../ui/typography';
@@ -34,7 +34,7 @@ function Col() {
 
 const WIDTH = 80;
 
-export function TimerWheel({ className, onValueChange, value }: Props) {
+function TimerWheelComponent({ className, onValueChange, value }: Props) {
   const initialHour = Math.floor(value / 3600);
   const initialMin = Math.floor((value % 3600) / 60);
   const initialSec = value % 60;
@@ -84,3 +84,12 @@ export function TimerWheel({ className, onValueChange, value }: Props) {
     </View>
   );
 }
+
+function areEqual(prev: Props, next: Props) {
+  return (
+    // prev.onValueChange === next.onValueChange &&
+    prev.className === next.className
+  );
+}
+
+export const TimerWheel = memo(TimerWheelComponent, areEqual);

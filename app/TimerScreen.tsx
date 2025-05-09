@@ -1,5 +1,4 @@
 import { StaticScreenProps } from '@react-navigation/native';
-import { View } from 'react-native';
 import { Spinner } from '~/components/sheard/Spinner';
 import { TimerForm } from '~/components/timer/form';
 import useTimerQuery from '~/hooks/useTimerQuery';
