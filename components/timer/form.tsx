@@ -1,6 +1,8 @@
 import { View } from 'react-native';
 import { eventEmitter } from '~/lib/events';
 import {
+  IntervalBellCreate,
+  IntervalBellUpdate,
   Timer,
   TimerCreate,
   timerCreateSchema,
@@ -27,7 +29,12 @@ import { BAD_ID } from '~/lib/constants';
 import { timerStrings } from '~/lib/strings/timer';
 import TimerMenu from './TimerMenu';
 import { formatSeconds } from '~/lib/utils';
-import { EVENT_ID } from '~/app/TimerWheelScreen';
+import { TIMER_WHEEL_EVENT } from '~/app/TimerWheelScreen';
+import { sheardStrings } from '~/lib/strings/sheard';
+import { FormProvider } from 'react-hook-form';
+import { INERVAL_BELL_EVENT } from '~/app/IntervalBellsScreen';
+import { useListenValue } from '~/hooks/useListenValue';
+import { date } from 'drizzle-orm/mysql-core';
 
 type Props = PropsWithChildren & { data?: Timer };
 type FormType = TimerUpdate | TimerCreate;
@@ -86,63 +93,105 @@ export function TimerForm({ data }: Props) {
         form.setValue(e, v, { shouldValidate: true });
       }
     };
-    eventEmitter.on(EVENT_ID, sub);
+    eventEmitter.on(TIMER_WHEEL_EVENT, sub);
 
     return () => {
-      eventEmitter.off(EVENT_ID);
+      eventEmitter.off(TIMER_WHEEL_EVENT);
     };
   }, []);
 
-  return (
-    <View className="px-8 mt-20 gap-4">
-      <Form {...form}>
-        <FormField
-          control={form.control}
-          name="duration"
-          render={({ field: { value, name } }) => (
-            <FormItem className="flex flex-row justify-between items-center">
-              <FormLabel>{timerStrings.form.duration}</FormLabel>
-              <FormControl>
-                <Button
-                  onPress={() => {
-                    setEntry(name);
-                    navigation.navigate('TimerWheel', { value: value });
-                  }}>
-                  <Text>{formatSeconds(value)}</Text>
-                </Button>
-              </FormControl>
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="warmUp"
-          render={({ field: { value, name } }) => (
-            <FormItem className="flex flex-row justify-between items-center">
-              <FormLabel>{timerStrings.form.warmUp}</FormLabel>
-              <FormControl>
-                <Button
-                  onPress={() => {
-                    setEntry(name);
-                    navigation.navigate('TimerWheel', { value: value });
-                  }}>
-                  <Text>{formatSeconds(value)}</Text>
-                </Button>
-              </FormControl>
-            </FormItem>
-          )}
-        />
-        <Button
-          variant={'outline'}
-          onPress={() => {
-            if (!form.formState.isValid) {
-              console.log('form.formState.errors', form.formState.errors);
-            }
-            submit();
-          }}>
-          {isUpdate ? <Save /> : <Plus />}
-        </Button>
-      </Form>
-    </View>
+  useListenValue(
+    INERVAL_BELL_EVENT,
+    (v: (IntervalBellCreate | IntervalBellUpdate)[]) => {
+      const ttt = v.map(e => ({ ...e, timerId: data?.id }));
+      form.setValue('intervalBells', ttt, { shouldValidate: true });
+    },
   );
+
+  return (
+    <FormProvider {...form}>
+      <View className="px-8 mt-20 gap-4">
+        <Form {...form}>
+          <FormField
+            control={form.control}
+            name="duration"
+            render={({ field: { value, name } }) => (
+              <FormItem className="flex flex-row justify-between items-center">
+                <FormLabel>{timerStrings.form.duration}</FormLabel>
+                <FormControl>
+                  <Button
+                    onPress={() => {
+                      setEntry(name);
+                      navigation.navigate('TimerWheel', { value: value });
+                    }}>
+                    <Text>{formatSeconds(value)}</Text>
+                  </Button>
+                </FormControl>
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="warmUp"
+            render={({ field: { value, name } }) => (
+              <FormItem className="flex flex-row justify-between items-center">
+                <FormLabel>{timerStrings.form.warmUp}</FormLabel>
+                <FormControl>
+                  <Button
+                    onPress={() => {
+                      setEntry(name);
+                      navigation.navigate('TimerWheel', { value: value });
+                    }}>
+                    <Text>{formatSeconds(value)}</Text>
+                  </Button>
+                </FormControl>
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="intervalBells"
+            render={({ field: { value, name } }) => (
+              <FormItem className="flex flex-row justify-between items-center">
+                <FormLabel>{timerStrings.form.intervalBells}</FormLabel>
+                <FormControl>
+                  <Button
+                    onPress={() => {
+                      setEntry(name);
+                      navigation.navigate('IntervalBells', {
+                        list: value,
+                      });
+                    }}>
+                    <Text>{bellsText(value.length)}</Text>
+                  </Button>
+                </FormControl>
+              </FormItem>
+            )}
+          />
+          <Button
+            variant={'outline'}
+            onPress={() => {
+              if (!form.formState.isValid) {
+                console.log('form.formState.errors', form.formState.errors);
+              }
+              submit();
+            }}>
+            {isUpdate ? <Save /> : <Plus />}
+          </Button>
+        </Form>
+      </View>
+    </FormProvider>
+  );
+}
+
+function bellsText(len: number): string {
+  if (!len) {
+    return sheardStrings.none;
+  }
+
+  if (len === 1) {
+    return timerStrings.form.oneBell;
+  }
+
+  return len + ' ' + timerStrings.form.bells;
 }

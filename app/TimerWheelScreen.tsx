@@ -1,8 +1,6 @@
-import { useEffect, useRef } from 'react';
-import { StaticScreenProps, useNavigation } from '@react-navigation/native';
-import { useState } from 'react';
+import { StaticScreenProps } from '@react-navigation/native';
 import { TimerWheel } from '~/components/timer/TimerWheel';
-import { eventEmitter } from '~/lib/events';
+import { useEmitValue } from '~/hooks/useEmitValue';
 
 export type TimerWheelParams = {
   value: number;
@@ -10,24 +8,12 @@ export type TimerWheelParams = {
 
 type Props = StaticScreenProps<TimerWheelParams>;
 
-export const EVENT_ID = 'timerWheelValue';
+export const TIMER_WHEEL_EVENT = 'timerWheelValue';
 
 export function TimerWheelScreen({ route }: Props) {
   const { value } = route.params;
-  const navigation = useNavigation();
-  const [tempValue, setTempValue] = useState(value);
 
-  const tempValueRef = useRef(tempValue);
-  useEffect(() => {
-    tempValueRef.current = tempValue;
-  }, [tempValue]);
-
-  useEffect(() => {
-    const unsubscribe = navigation.addListener('beforeRemove', () => {
-      eventEmitter.emit(EVENT_ID, tempValueRef.current);
-    });
-    return unsubscribe;
-  }, [navigation]);
+  const [tempValue, setTempValue] = useEmitValue(TIMER_WHEEL_EVENT, value);
 
   return (
     <TimerWheel

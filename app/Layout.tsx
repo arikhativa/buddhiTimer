@@ -21,11 +21,16 @@ import useToastConfig from '~/hooks/useToastConfig';
 import { TimerParams, TimerScreen } from './TimerScreen';
 import { PresetsScreen } from './PresetsScreen';
 import { TimerWheelParams, TimerWheelScreen } from './TimerWheelScreen';
+import {
+  IntervalBellsParams,
+  IntervalBellsScreen,
+} from './IntervalBellsScreen';
 
 type RootStackParamList = {
   Home: undefined;
   Timer: TimerParams;
   TimerWheel: TimerWheelParams;
+  IntervalBells: IntervalBellsParams;
   Presets: undefined;
   Settings: undefined;
 };
@@ -52,6 +57,12 @@ const RootStack = createNativeStackNavigator<RootStackParamList>({
     },
     TimerWheel: {
       screen: TimerWheelScreen,
+      options: {
+        title: '',
+      },
+    },
+    IntervalBells: {
+      screen: IntervalBellsScreen,
       options: {
         title: '',
       },
