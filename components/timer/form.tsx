@@ -15,10 +15,9 @@ import {
   FormItem,
   FormLabel,
 } from '../sheard/form';
-import { useEffect, PropsWithChildren } from 'react';
+import { useEffect, PropsWithChildren, useRef, useState } from 'react';
 import { TimerService } from '~/services/timer';
 import useFormSetup from '~/hooks/useFormSetup';
-import InputNumber from '../sheard/InputNumber';
 import { Text } from '../ui/text';
 import { Button } from '../ui/button';
 import { Plus } from '~/lib/icons/Plus';
@@ -28,6 +27,7 @@ import { BAD_ID } from '~/lib/constants';
 import { timerStrings } from '~/lib/strings/timer';
 import TimerMenu from './TimerMenu';
 import { formatSeconds } from '~/lib/utils';
+import { EVENT_ID } from '~/app/TimerWheelScreen';
 
 type Props = PropsWithChildren & { data?: Timer };
 type FormType = TimerUpdate | TimerCreate;
@@ -71,29 +71,41 @@ export function TimerForm({ data }: Props) {
     });
   }, [isUpdate, data?.id, navigation]);
 
+  const [entry, setEntry] = useState<keyof FormType | undefined>();
+
+  const entryRef = useRef(entry);
+
+  useEffect(() => {
+    entryRef.current = entry;
+  }, [entry]);
+
   useEffect(() => {
     const sub = (v: number) => {
-      form.setValue('duration', v, { shouldValidate: true });
+      const e = entryRef.current;
+      if (e) {
+        form.setValue(e, v, { shouldValidate: true });
+      }
     };
-    eventEmitter.on('timerWheelValue', sub);
+    eventEmitter.on(EVENT_ID, sub);
 
     return () => {
-      eventEmitter.off('timerWheelValue');
+      eventEmitter.off(EVENT_ID);
     };
   }, []);
 
   return (
-    <View className="px-8 mt-20">
+    <View className="px-8 mt-20 gap-4">
       <Form {...form}>
         <FormField
           control={form.control}
           name="duration"
-          render={({ field: { value } }) => (
+          render={({ field: { value, name } }) => (
             <FormItem className="flex flex-row justify-between items-center">
               <FormLabel>{timerStrings.form.duration}</FormLabel>
               <FormControl>
                 <Button
                   onPress={() => {
+                    setEntry(name);
                     navigation.navigate('TimerWheel', { value: value });
                   }}>
                   <Text>{formatSeconds(value)}</Text>
@@ -105,15 +117,17 @@ export function TimerForm({ data }: Props) {
         <FormField
           control={form.control}
           name="warmUp"
-          render={({ field: { onChange, value } }) => (
+          render={({ field: { value, name } }) => (
             <FormItem className="flex flex-row justify-between items-center">
               <FormLabel>{timerStrings.form.warmUp}</FormLabel>
               <FormControl>
-                {value !== null ? (
-                  <InputNumber onChange={onChange} value={value} />
-                ) : (
-                  <Text> {timerStrings.form.missingWarmUp}</Text>
-                )}
+                <Button
+                  onPress={() => {
+                    setEntry(name);
+                    navigation.navigate('TimerWheel', { value: value });
+                  }}>
+                  <Text>{formatSeconds(value)}</Text>
+                </Button>
               </FormControl>
             </FormItem>
           )}

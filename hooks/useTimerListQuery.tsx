@@ -7,7 +7,6 @@ export default function useTimerListQuery() {
   const query = useQuery<Timer[]>({
     queryKey: [timerKeyword],
     queryFn: () => {
-      console.log('fetch many');
       return TimerService.getMany();
     },
     staleTime: USE_QUERY_STALE_TIME,

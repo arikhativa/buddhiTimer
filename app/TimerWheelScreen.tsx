@@ -10,6 +10,8 @@ export type TimerWheelParams = {
 
 type Props = StaticScreenProps<TimerWheelParams>;
 
+export const EVENT_ID = 'timerWheelValue';
+
 export function TimerWheelScreen({ route }: Props) {
   const { value } = route.params;
   const navigation = useNavigation();
@@ -22,7 +24,7 @@ export function TimerWheelScreen({ route }: Props) {
 
   useEffect(() => {
     const unsubscribe = navigation.addListener('beforeRemove', () => {
-      eventEmitter.emit('timerWheelValue', tempValueRef.current);
+      eventEmitter.emit(EVENT_ID, tempValueRef.current);
     });
     return unsubscribe;
   }, [navigation]);
