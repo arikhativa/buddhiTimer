@@ -9,6 +9,8 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useEffect } from 'react';
 import { Separator } from '../ui/separator';
 import { sheardStrings } from '~/lib/strings/sheard';
+import { NavigationProp, useNavigation } from '@react-navigation/native';
+import { RootStackParamList } from '~/app/Layout';
 
 type Props = {
   value: IntervalBellSchema[];
@@ -19,15 +21,28 @@ const schema = z.object({
   list: z.array(intervalBellFormSchema),
 });
 
-function Item({ item }: { item: IntervalBellSchema }) {
+function Item({
+  item,
+  navigation,
+}: {
+  item: IntervalBellSchema;
+  navigation: NavigationProp<RootStackParamList>;
+}) {
   return (
-    <TouchableOpacity className="mx-4 py-4 flex-row justify-between items-center">
+    <TouchableOpacity
+      className="mx-4 py-4 flex-row justify-between items-center"
+      onPress={() =>
+        navigation.navigate('IntervalBellExpanded', { value: item })
+      }>
       <Large>{item.duration}</Large>
       <Muted>{item.reference}</Muted>
     </TouchableOpacity>
   );
 }
+
 export function IntervalBellsForm({ value, onChange }: Props) {
+  const navigation = useNavigation();
+
   const form = useForm({
     resolver: zodResolver(schema),
     defaultValues: { list: value },
@@ -37,6 +52,7 @@ export function IntervalBellsForm({ value, onChange }: Props) {
 
   useEffect(() => {
     onChange(watch);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [watch]);
 
   const { fields, append } = useFieldArray({
@@ -55,7 +71,7 @@ export function IntervalBellsForm({ value, onChange }: Props) {
         )}
         {fields.map(field => (
           <View key={field.id}>
-            <Item item={field} />
+            <Item item={field} navigation={navigation} />
 
             <Separator className="mx-5 w-fit" />
           </View>

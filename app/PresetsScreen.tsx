@@ -1,4 +1,4 @@
-import { useNavigation } from '@react-navigation/native';
+import { NavigationProp, useNavigation } from '@react-navigation/native';
 import { FlatList, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { Spinner } from '~/components/sheard/Spinner';
 import { Button } from '~/components/ui/button';
@@ -9,8 +9,15 @@ import useTimerListQuery from '~/hooks/useTimerListQuery';
 import { Plus } from '~/lib/icons/Plus';
 import { sheardStrings } from '~/lib/strings/sheard';
 import { formatSeconds } from '~/lib/utils';
+import { RootStackParamList } from './Layout';
 
-function Line({ item, navigation }: { item: Timer; navigation: any }) {
+function Line({
+  item,
+  navigation,
+}: {
+  item: Timer;
+  navigation: NavigationProp<RootStackParamList>;
+}) {
   return (
     <TouchableOpacity
       className="mx-4 py-4 flex-row justify-between items-center"

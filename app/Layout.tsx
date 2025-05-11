@@ -26,7 +26,7 @@ import {
   IntervalBellsScreen,
 } from './IntervalBellsScreen';
 
-type RootStackParamList = {
+export type RootStackParamList = {
   Home: undefined;
   Timer: TimerParams;
   TimerWheel: TimerWheelParams;
@@ -75,8 +75,6 @@ const RootStack = createNativeStackNavigator<RootStackParamList>({
     },
   },
 });
-
-// type RootStackParamList = StaticParamList<typeof RootStack>;
 
 declare global {
   namespace ReactNavigation {
