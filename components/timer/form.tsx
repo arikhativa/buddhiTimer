@@ -34,7 +34,6 @@ import { sheardStrings } from '~/lib/strings/sheard';
 import { FormProvider } from 'react-hook-form';
 import { INERVAL_BELL_EVENT } from '~/app/IntervalBellsScreen';
 import { useListenValue } from '~/hooks/useListenValue';
-import { date } from 'drizzle-orm/mysql-core';
 
 type Props = PropsWithChildren & { data?: Timer };
 type FormType = TimerUpdate | TimerCreate;

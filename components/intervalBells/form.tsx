@@ -1,12 +1,14 @@
-import { useFieldArray, useForm, useFormContext } from 'react-hook-form';
-import { View } from 'react-native';
+import { useFieldArray, useForm } from 'react-hook-form';
+import { TouchableOpacity, View } from 'react-native';
 import { IntervalBellSchema, intervalBellFormSchema } from '~/db/schema';
-import { H1 } from '../ui/typography';
+import { Large, Muted } from '../ui/typography';
 import { Plus } from '~/lib/icons/Plus';
 import { Button } from '../ui/button';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useEffect } from 'react';
+import { Separator } from '../ui/separator';
+import { sheardStrings } from '~/lib/strings/sheard';
 
 type Props = {
   value: IntervalBellSchema[];
@@ -17,6 +19,14 @@ const schema = z.object({
   list: z.array(intervalBellFormSchema),
 });
 
+function Item({ item }: { item: IntervalBellSchema }) {
+  return (
+    <TouchableOpacity className="mx-4 py-4 flex-row justify-between items-center">
+      <Large>{item.duration}</Large>
+      <Muted>{item.reference}</Muted>
+    </TouchableOpacity>
+  );
+}
 export function IntervalBellsForm({ value, onChange }: Props) {
   const form = useForm({
     resolver: zodResolver(schema),
@@ -29,26 +39,32 @@ export function IntervalBellsForm({ value, onChange }: Props) {
     onChange(watch);
   }, [watch]);
 
-  const { fields, append, prepend, remove, swap, move, insert } = useFieldArray(
-    {
-      control: form.control, // control props comes from useForm (optional: if you are using FormProvider)
-      name: 'list', // unique name for your Field Array
-    },
-  );
+  const { fields, append } = useFieldArray({
+    control: form.control, // control props comes from useForm (optional: if you are using FormProvider)
+    name: 'list', // unique name for your Field Array
+  });
 
   return (
     <View>
       <View>
-        {fields.map((field, index) => (
+        {!fields.length && (
+          <>
+            <Muted className="my-4 self-center">{sheardStrings.empty}</Muted>
+            <Separator className="mx-5 w-fit" />
+          </>
+        )}
+        {fields.map(field => (
           <View key={field.id}>
-            <H1>{index}</H1>
-            <H1>{field.duration}</H1>
+            <Item item={field} />
+
+            <Separator className="mx-5 w-fit" />
           </View>
         ))}
       </View>
 
       <Button
-        variant={'outline'}
+        className="mt-4"
+        variant={'ghost'}
         onPress={() => {
           append({ duration: 0, reference: 'fromStart' });
         }}>
