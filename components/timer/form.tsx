@@ -32,7 +32,10 @@ import { formatSeconds } from '~/lib/utils';
 import { TIMER_WHEEL_EVENT } from '~/app/TimerWheelScreen';
 import { sheardStrings } from '~/lib/strings/sheard';
 import { FormProvider } from 'react-hook-form';
-import { INERVAL_BELL_EVENT } from '~/app/IntervalBellsScreen';
+import {
+  INERVAL_BELL_EVENT,
+  INERVAL_BELLS_EVENT,
+} from '~/app/IntervalBellsScreen';
 import { useListenValue } from '~/hooks/useListenValue';
 
 type Props = PropsWithChildren & { data?: Timer };
@@ -85,22 +88,17 @@ export function TimerForm({ data }: Props) {
     entryRef.current = entry;
   }, [entry]);
 
-  useEffect(() => {
-    const sub = (v: number) => {
-      const e = entryRef.current;
-      if (e) {
-        form.setValue(e, v, { shouldValidate: true });
-      }
-    };
-    eventEmitter.on(TIMER_WHEEL_EVENT, sub);
+  const sub = (v: number) => {
+    const e = entryRef.current;
+    if (e) {
+      form.setValue(e, v, { shouldValidate: true });
+    }
+  };
 
-    return () => {
-      eventEmitter.off(TIMER_WHEEL_EVENT);
-    };
-  }, []);
+  useListenValue(TIMER_WHEEL_EVENT, sub);
 
   useListenValue(
-    INERVAL_BELL_EVENT,
+    INERVAL_BELLS_EVENT,
     (v: (IntervalBellCreate | IntervalBellUpdate)[]) => {
       const ttt = v.map(e => ({ ...e, timerId: data?.id }));
       form.setValue('intervalBells', ttt, { shouldValidate: true });

@@ -7,4 +7,10 @@ export const timerStrings = {
     bells: 'Bells',
     missingWarmUp: 'no warm up',
   },
+  intervalBells: {
+    refrance: {
+      start: 'From Start',
+      end: 'Before End',
+    },
+  },
 };

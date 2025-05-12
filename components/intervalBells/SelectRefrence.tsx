@@ -7,15 +7,19 @@ import {
   SelectTrigger,
   SelectValue,
 } from '~/components/ui/select';
-import { settingsScreenString } from '~/lib/strings/settingsScreen';
-import { capitalizeFirstLetter } from '~/lib/utils';
+import { IntervalBellSchema } from '~/db/schema';
+import { timerStrings } from '~/lib/strings/timer';
 
 interface Props {
   value: string;
   onChange: (v: string) => void;
 }
+interface Option {
+  value: IntervalBellSchema['reference'];
+  label: string;
+}
 
-export default function SelectTheme({ value, onChange }: Props) {
+export default function SelectRefrance({ value, onChange }: Props) {
   const insets = useSafeAreaInsets();
 
   const contentInsets = {
@@ -25,20 +29,24 @@ export default function SelectTheme({ value, onChange }: Props) {
     right: 12,
   };
 
-  const items = settingsScreenString.items;
+  const options: Option[] = [
+    {
+      value: 'fromStart',
+      label: timerStrings.intervalBells.refrance.start,
+    },
+    {
+      value: 'beforeEnd',
+      label: timerStrings.intervalBells.refrance.end,
+    },
+  ];
 
-  const capitalized = capitalizeFirstLetter(value);
-
-  const option = {
-    value: capitalized,
-    label: capitalized,
-  };
+  const option = options.find(e => e.value === value);
 
   return (
     <Select
       value={option}
       onValueChange={o => {
-        o && onChange(o.value.toLowerCase());
+        o && onChange(o.value);
       }}>
       <SelectTrigger className="w-[250px]">
         <SelectValue
@@ -48,8 +56,8 @@ export default function SelectTheme({ value, onChange }: Props) {
       </SelectTrigger>
       <SelectContent insets={contentInsets} className="w-[250px]">
         <SelectGroup>
-          {items.map(e => (
-            <SelectItem key={e} label={e} value={e} />
+          {options.map(e => (
+            <SelectItem key={e.value} label={e.label} value={e.value} />
           ))}
         </SelectGroup>
       </SelectContent>

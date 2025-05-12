@@ -9,12 +9,12 @@ export type IntervalBellsParams = {
 
 type Props = StaticScreenProps<IntervalBellsParams>;
 
-export const INERVAL_BELL_EVENT = 'INERVAL_BELL_EVENT';
+export const INERVAL_BELLS_EVENT = 'INERVAL_BELLS_EVENT';
 
 export function IntervalBellsScreen({ route }: Props) {
   const { list } = route.params;
   const tmp: IntervalBellSchema[] = [...list];
-  const [value, onChange] = useEmitValue(INERVAL_BELL_EVENT, tmp);
+  const [value, onChange] = useEmitValue(INERVAL_BELLS_EVENT, tmp);
 
   return <IntervalBellsForm value={value} onChange={onChange} />;
 }

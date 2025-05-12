@@ -6,11 +6,14 @@ import { Plus } from '~/lib/icons/Plus';
 import { Button } from '../ui/button';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useEffect } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Separator } from '../ui/separator';
 import { sheardStrings } from '~/lib/strings/sheard';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
 import { RootStackParamList } from '~/app/Layout';
+import { INTERVAL_BELL_EVENT } from '~/app/IntervalBellScreen';
+import { useListenValue } from '~/hooks/useListenValue';
+import { formatSeconds } from '~/lib/utils';
 
 type Props = {
   value: IntervalBellSchema[];
@@ -24,17 +27,22 @@ const schema = z.object({
 function Item({
   item,
   navigation,
+  index,
+  onSelect,
 }: {
   item: IntervalBellSchema;
   navigation: NavigationProp<RootStackParamList>;
+  index: number;
+  onSelect: (i: number) => void;
 }) {
   return (
     <TouchableOpacity
       className="mx-4 py-4 flex-row justify-between items-center"
-      onPress={() =>
-        navigation.navigate('IntervalBellExpanded', { value: item })
-      }>
-      <Large>{item.duration}</Large>
+      onPress={() => {
+        onSelect(index);
+        navigation.navigate('IntervalBell', { value: item });
+      }}>
+      <Large>{formatSeconds(item.duration)}</Large>
       <Muted>{item.reference}</Muted>
     </TouchableOpacity>
   );
@@ -55,10 +63,28 @@ export function IntervalBellsForm({ value, onChange }: Props) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [watch]);
 
-  const { fields, append } = useFieldArray({
+  const { fields, append, update } = useFieldArray({
     control: form.control, // control props comes from useForm (optional: if you are using FormProvider)
     name: 'list', // unique name for your Field Array
   });
+  const [entry, setEntry] = useState<number | undefined>();
+
+  const entryRef = useRef(entry);
+
+  useEffect(() => {
+    entryRef.current = entry;
+  }, [entry]);
+
+  const handleEvent = (v: IntervalBellSchema) => {
+    const i = entryRef.current;
+
+    console.log('form', v);
+    if (i !== undefined && i < watch.length) {
+      update(i, v);
+    }
+  };
+
+  useListenValue(INTERVAL_BELL_EVENT, handleEvent);
 
   return (
     <View>
@@ -69,9 +95,14 @@ export function IntervalBellsForm({ value, onChange }: Props) {
             <Separator className="mx-5 w-fit" />
           </>
         )}
-        {fields.map(field => (
+        {fields.map((field, index) => (
           <View key={field.id}>
-            <Item item={field} navigation={navigation} />
+            <Item
+              item={field}
+              navigation={navigation as NavigationProp<RootStackParamList>}
+              index={index}
+              onSelect={setEntry}
+            />
 
             <Separator className="mx-5 w-fit" />
           </View>
