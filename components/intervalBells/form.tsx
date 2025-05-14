@@ -6,7 +6,7 @@ import { Plus } from '~/lib/icons/Plus';
 import { Button } from '../ui/button';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { Separator } from '../ui/separator';
 import { sheardStrings } from '~/lib/strings/sheard';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
@@ -14,6 +14,8 @@ import { RootStackParamList } from '~/app/Layout';
 import { INTERVAL_BELL_EVENT } from '~/app/IntervalBellScreen';
 import { useListenValue } from '~/hooks/useListenValue';
 import { formatSeconds } from '~/lib/utils';
+import { timerStrings } from '~/lib/strings/timer';
+import { Sun } from '~/lib/icons/Sun';
 
 type Props = {
   value: IntervalBellSchema[];
@@ -35,6 +37,11 @@ function Item({
   index: number;
   onSelect: (i: number) => void;
 }) {
+  const reference =
+    item.reference === 'fromStart'
+      ? timerStrings.intervalBells.refrance.start
+      : timerStrings.intervalBells.refrance.end;
+
   return (
     <TouchableOpacity
       className="mx-4 py-4 flex-row justify-between items-center"
@@ -43,7 +50,7 @@ function Item({
         navigation.navigate('IntervalBell', { value: item });
       }}>
       <Large>{formatSeconds(item.duration)}</Large>
-      <Muted>{item.reference}</Muted>
+      <Muted>{reference}</Muted>
     </TouchableOpacity>
   );
 }
@@ -56,17 +63,47 @@ export function IntervalBellsForm({ value, onChange }: Props) {
     defaultValues: { list: value },
   });
 
-  const watch = form.watch('list');
+  // const watch = form.watch('list');
 
-  useEffect(() => {
-    onChange(watch);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [watch]);
+  // const submit = form.handleSubmit(
+  //   values => {
+  //     console.log('values', values);
+  //     onChange(values.list);
+  //   },
+  //   e => {
+  //     console.log('sub erre', e);
+  //   },
+  // );
 
+  const submit = form.handleSubmit(
+    values => {
+      console.log('values', values);
+
+      const cleaned = values.list.map(({ id, duration, reference }) => ({
+        ...(id !== undefined ? { id } : {}),
+        duration,
+        reference,
+      }));
+      onChange(cleaned);
+    },
+    errors => {
+      console.log('❌ validation errors', errors);
+    },
+  );
+
+  // useEffect(() => {
+  //   if (form.formState.isDirty) {
+  //     console.log('submit');
+  //     submit();
+  //     console.log('ee', form.formState.errors);
+  //   }
+  // }, [form.formState.isDirty, submit]);
+  //
   const { fields, append, update } = useFieldArray({
     control: form.control, // control props comes from useForm (optional: if you are using FormProvider)
     name: 'list', // unique name for your Field Array
   });
+
   const [entry, setEntry] = useState<number | undefined>();
 
   const entryRef = useRef(entry);
@@ -75,14 +112,17 @@ export function IntervalBellsForm({ value, onChange }: Props) {
     entryRef.current = entry;
   }, [entry]);
 
-  const handleEvent = (v: IntervalBellSchema) => {
-    const i = entryRef.current;
+  const handleEvent = useCallback(
+    (v: IntervalBellSchema) => {
+      delete v.id
+      const i = entryRef.current;
 
-    console.log('form', v);
-    if (i !== undefined && i < watch.length) {
-      update(i, v);
-    }
-  };
+      if (i !== undefined) {
+        update(i, v);
+      }
+    },
+    [update],
+  );
 
   useListenValue(INTERVAL_BELL_EVENT, handleEvent);
 
@@ -116,6 +156,16 @@ export function IntervalBellsForm({ value, onChange }: Props) {
           append({ duration: 0, reference: 'fromStart' });
         }}>
         <Plus />
+      </Button>
+      <Button
+        className="mt-4"
+        variant={'ghost'}
+        onPress={() => {
+          const val = form.getValues().list;
+          console.log('val', val);
+          submit();
+        }}>
+        <Sun />
       </Button>
     </View>
   );

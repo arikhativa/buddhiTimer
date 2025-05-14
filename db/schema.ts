@@ -73,13 +73,12 @@ export const intervalBellCreateSchema = createInsertSchema(intervalBellTable)
     duration: z.number().positive(),
   });
 
-export const intervalBellUpdateSchema = createUpdateSchema(
-  intervalBellTable,
-).extend({
-  id: z.number(),
-  timerId: z.number().positive(),
-  duration: z.number().positive(),
-});
+export const intervalBellUpdateSchema = createUpdateSchema(intervalBellTable)
+  .omit({ timerId: true })
+  .extend({
+    id: z.number(),
+    duration: z.number().positive(),
+  });
 
 export const intervalBellFormSchema = intervalBellSchema.extend({
   id: z.number().optional(),

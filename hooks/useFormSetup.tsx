@@ -9,7 +9,6 @@ import { DefaultValues, FieldValues, useForm } from 'react-hook-form';
 import { ZodType } from 'zod';
 import useFormToast from './useFormToast';
 import { useNavigation } from '@react-navigation/native';
-import { timerKeyword } from '~/db/schema';
 
 interface Props<TForm extends FieldValues, TData> {
   schema: ZodType;

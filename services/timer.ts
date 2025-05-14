@@ -1,5 +1,6 @@
 import { eq } from 'drizzle-orm';
 import {
+  IntervalBellCreate,
   Timer,
   TimerCreate,
   TimerUpdate,
@@ -50,7 +51,10 @@ export class TimerService {
       }
 
       if (parsed.intervalBells && parsed.intervalBells.length) {
-        await IntervalBellService.create(parsed.intervalBells, tx);
+        const createList: IntervalBellCreate[] = parsed.intervalBells.map(
+          e => ({ ...e, timerId: ret[0].id }),
+        );
+        await IntervalBellService.create(createList, tx);
       }
 
       const result = await TimerService.getById(ret[0].id, tx);

@@ -41,7 +41,10 @@ export function PresetsScreen() {
           data={data}
           keyExtractor={item => item.id.toString()}
           renderItem={({ item }) => (
-            <Line item={item} navigation={navigation} />
+            <Line
+              item={item}
+              navigation={navigation as NavigationProp<RootStackParamList>}
+            />
           )}
           ItemSeparatorComponent={() => <Separator className="mx-5 w-fit" />}
           ListEmptyComponent={

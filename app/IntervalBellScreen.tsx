@@ -19,7 +19,13 @@ export function IntervalBellScreen({ route }: Props) {
   const [local, setLocal] = useEmitValue(INTERVAL_BELL_EVENT, value);
 
   return (
-    <View>
+    <View className="flex-1 justify-center items-center gap-8 mt-10">
+      <TimerWheel
+        value={local.duration}
+        onValueChange={v => {
+          setLocal(prev => ({ ...prev, duration: v }));
+        }}
+      />
       <SelectRefrance
         value={local.reference}
         onChange={v => {
@@ -27,12 +33,6 @@ export function IntervalBellScreen({ route }: Props) {
             ...prev,
             reference: v as IntervalBellSchema['reference'],
           }));
-        }}
-      />
-      <TimerWheel
-        value={local.duration}
-        onValueChange={v => {
-          setLocal(prev => ({ ...prev, duration: v }));
         }}
       />
     </View>

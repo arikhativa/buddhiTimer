@@ -11,15 +11,17 @@ import { IntervalBellSchema } from '~/db/schema';
 import { timerStrings } from '~/lib/strings/timer';
 
 interface Props {
+  className?: string;
   value: string;
   onChange: (v: string) => void;
 }
+
 interface Option {
   value: IntervalBellSchema['reference'];
   label: string;
 }
 
-export default function SelectRefrance({ value, onChange }: Props) {
+export default function SelectRefrance({ className, value, onChange }: Props) {
   const insets = useSafeAreaInsets();
 
   const contentInsets = {
@@ -44,6 +46,7 @@ export default function SelectRefrance({ value, onChange }: Props) {
 
   return (
     <Select
+      className={className}
       value={option}
       onValueChange={o => {
         o && onChange(o.value);

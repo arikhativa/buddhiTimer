@@ -1,8 +1,6 @@
 import { View } from 'react-native';
-import { eventEmitter } from '~/lib/events';
 import {
-  IntervalBellCreate,
-  IntervalBellUpdate,
+  IntervalBellSchema,
   Timer,
   TimerCreate,
   timerCreateSchema,
@@ -32,10 +30,7 @@ import { formatSeconds } from '~/lib/utils';
 import { TIMER_WHEEL_EVENT } from '~/app/TimerWheelScreen';
 import { sheardStrings } from '~/lib/strings/sheard';
 import { FormProvider } from 'react-hook-form';
-import {
-  INERVAL_BELL_EVENT,
-  INERVAL_BELLS_EVENT,
-} from '~/app/IntervalBellsScreen';
+import { INERVAL_BELLS_EVENT } from '~/app/IntervalBellsScreen';
 import { useListenValue } from '~/hooks/useListenValue';
 
 type Props = PropsWithChildren & { data?: Timer };
@@ -97,13 +92,15 @@ export function TimerForm({ data }: Props) {
 
   useListenValue(TIMER_WHEEL_EVENT, sub);
 
-  useListenValue(
-    INERVAL_BELLS_EVENT,
-    (v: (IntervalBellCreate | IntervalBellUpdate)[]) => {
-      const ttt = v.map(e => ({ ...e, timerId: data?.id }));
-      form.setValue('intervalBells', ttt, { shouldValidate: true });
-    },
-  );
+  useListenValue(INERVAL_BELLS_EVENT, (v: IntervalBellSchema[]) => {
+    let ttt = v
+    if (data?.id) {
+      ttt = v.map(e => ({ ...e, timerId: data?.id }));
+    }
+    console.log('ttt', ttt);
+
+    form.setValue('intervalBells', ttt, { shouldValidate: true });
+  });
 
   return (
     <FormProvider {...form}>
@@ -168,9 +165,6 @@ export function TimerForm({ data }: Props) {
           <Button
             variant={'outline'}
             onPress={() => {
-              if (!form.formState.isValid) {
-                console.log('form.formState.errors', form.formState.errors);
-              }
               submit();
             }}>
             {isUpdate ? <Save /> : <Plus />}

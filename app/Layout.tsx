@@ -66,13 +66,13 @@ const RootStack = createNativeStackNavigator<RootStackParamList>({
     IntervalBells: {
       screen: IntervalBellsScreen,
       options: {
-        title: '',
+        title: 'Interval Bells List',
       },
     },
     IntervalBell: {
       screen: IntervalBellScreen,
       options: {
-        title: '',
+        title: 'Interval Bell',
       },
     },
     Presets: {
