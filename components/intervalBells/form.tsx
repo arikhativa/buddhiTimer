@@ -15,7 +15,6 @@ import { INTERVAL_BELL_EVENT } from '~/app/IntervalBellScreen';
 import { useListenValue } from '~/hooks/useListenValue';
 import { formatSeconds } from '~/lib/utils';
 import { timerStrings } from '~/lib/strings/timer';
-import { Sun } from '~/lib/icons/Sun';
 
 type Props = {
   value: IntervalBellSchema[];
@@ -58,24 +57,17 @@ function Item({
 export function IntervalBellsForm({ value, onChange }: Props) {
   const navigation = useNavigation();
 
-  const form = useForm({
+  const {
+    reset,
+    formState: { isValid, isDirty },
+    handleSubmit,
+    control,
+  } = useForm({
     resolver: zodResolver(schema),
     defaultValues: { list: value },
   });
 
-  // const watch = form.watch('list');
-
-  // const submit = form.handleSubmit(
-  //   values => {
-  //     console.log('values', values);
-  //     onChange(values.list);
-  //   },
-  //   e => {
-  //     console.log('sub erre', e);
-  //   },
-  // );
-
-  const submit = form.handleSubmit(
+  const submit = handleSubmit(
     values => {
       console.log('values', values);
 
@@ -85,23 +77,22 @@ export function IntervalBellsForm({ value, onChange }: Props) {
         reference,
       }));
       onChange(cleaned);
+      reset({ list: cleaned });
     },
     errors => {
       console.log('❌ validation errors', errors);
     },
   );
 
-  // useEffect(() => {
-  //   if (form.formState.isDirty) {
-  //     console.log('submit');
-  //     submit();
-  //     console.log('ee', form.formState.errors);
-  //   }
-  // }, [form.formState.isDirty, submit]);
-  //
+  useEffect(() => {
+    if (isValid && isDirty) {
+      submit();
+    }
+  }, [isDirty, isValid, submit]);
+
   const { fields, append, update } = useFieldArray({
-    control: form.control, // control props comes from useForm (optional: if you are using FormProvider)
-    name: 'list', // unique name for your Field Array
+    control: control,
+    name: 'list',
   });
 
   const [entry, setEntry] = useState<number | undefined>();
@@ -114,7 +105,7 @@ export function IntervalBellsForm({ value, onChange }: Props) {
 
   const handleEvent = useCallback(
     (v: IntervalBellSchema) => {
-      delete v.id
+      delete v.id;
       const i = entryRef.current;
 
       if (i !== undefined) {
@@ -148,7 +139,6 @@ export function IntervalBellsForm({ value, onChange }: Props) {
           </View>
         ))}
       </View>
-
       <Button
         className="mt-4"
         variant={'ghost'}
@@ -156,16 +146,6 @@ export function IntervalBellsForm({ value, onChange }: Props) {
           append({ duration: 0, reference: 'fromStart' });
         }}>
         <Plus />
-      </Button>
-      <Button
-        className="mt-4"
-        variant={'ghost'}
-        onPress={() => {
-          const val = form.getValues().list;
-          console.log('val', val);
-          submit();
-        }}>
-        <Sun />
       </Button>
     </View>
   );
