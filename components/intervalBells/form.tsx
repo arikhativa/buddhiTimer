@@ -69,8 +69,6 @@ export function IntervalBellsForm({ value, onChange }: Props) {
 
   const submit = handleSubmit(
     values => {
-      console.log('values', values);
-
       const cleaned = values.list.map(({ id, duration, reference }) => ({
         ...(id !== undefined ? { id } : {}),
         duration,
@@ -80,7 +78,7 @@ export function IntervalBellsForm({ value, onChange }: Props) {
       reset({ list: cleaned });
     },
     errors => {
-      console.log('❌ validation errors', errors);
+      console.error('IntervalBellsForm', errors);
     },
   );
 

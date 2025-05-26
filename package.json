@@ -6,6 +6,7 @@
     "android": "react-native run-android",
     "ios": "react-native run-ios",
     "lint": "eslint .",
+    "dryCompile": "tsc --noEmit -p ./tsconfig.json",
     "start": "react-native start",
     "test": "jest"
   },

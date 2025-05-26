@@ -57,12 +57,14 @@ export function TimerForm({ data }: Props) {
     mutate,
     onDelete: (obj: Timer) => TimerService.delete(obj.id),
     queryKeyword: timerKeyword,
-    defaultValues: data || {
-      id: BAD_ID,
-      duration: 0,
-      warmUp: null,
-      intervalBells: [],
-    },
+    defaultValues: isUpdate
+      ? data
+      : {
+          id: BAD_ID,
+          duration: 0,
+          warmUp: null,
+          intervalBells: [],
+        },
     isAutoSubmit: false,
     handleOnSuccess,
   });
@@ -93,13 +95,11 @@ export function TimerForm({ data }: Props) {
   useListenValue(TIMER_WHEEL_EVENT, sub);
 
   useListenValue(INERVAL_BELLS_EVENT, (v: IntervalBellSchema[]) => {
-    let ttt = v
+    let valToSet = v;
     if (data?.id) {
-      ttt = v.map(e => ({ ...e, timerId: data?.id }));
+      valToSet = v.map(e => ({ ...e, timerId: data?.id }));
     }
-    console.log('ttt', ttt);
-
-    form.setValue('intervalBells', ttt, { shouldValidate: true });
+    form.setValue('intervalBells', valToSet, { shouldValidate: true });
   });
 
   return (

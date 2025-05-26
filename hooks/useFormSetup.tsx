@@ -13,7 +13,7 @@ import { useNavigation } from '@react-navigation/native';
 interface Props<TForm extends FieldValues, TData> {
   schema: ZodType;
   mutate: (v: TForm) => Promise<TData>;
-  onDelete: (obj: TData) => Promise<void>;
+  onDelete?: (obj: TData) => Promise<void>;
   queryKeyword: string;
   defaultValues: DefaultValues<TForm>;
   isAutoSubmit?: boolean;
@@ -61,7 +61,7 @@ export default function useFormSetup<TForm extends FieldValues, TData>({
   const mutation = useMutation<TData, unknown, TForm>({
     mutationFn,
     onError: e => {
-      e && console.error('Form Submit Error: ', e);
+      e && console.error('Form Submit :', e);
       saveError();
       if (isAutoSubmit) {
         form.reset(defaultValues);

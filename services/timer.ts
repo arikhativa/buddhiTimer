@@ -76,10 +76,10 @@ export class TimerService {
         .returning();
 
       if (!ret || !ret.length) {
-        throw new Error('Failed to update');
+        throw new Error(`Failed to update id: ${obj.id}`);
       }
 
-      await IntervalBellService.upsert(parsed.intervalBells, tx);
+      await IntervalBellService.upsert(parsed.intervalBells, obj.id, tx);
 
       const result = await TimerService.getById(obj.id, tx);
 

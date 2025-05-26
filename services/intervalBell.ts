@@ -3,6 +3,7 @@ import { z } from 'zod';
 import {
   IntervalBell,
   IntervalBellCreate,
+  IntervalBellSchema,
   IntervalBellUpdate,
   intervalBellCreateSchema,
   intervalBellSchema,
@@ -80,7 +81,8 @@ export class IntervalBellService {
   }
 
   static async upsert(
-    objs: IntervalBellUpdate[] | IntervalBellCreate[],
+    objs: IntervalBellSchema[],
+    timerId: number,
     tx?: Transaction,
   ): Promise<void> {
     if (!objs || !objs.length) return;
@@ -95,22 +97,20 @@ export class IntervalBellService {
       }
     });
 
-    const updateParsed = z
-      .array(intervalBellUpdateSchema)
-      .parse(objs.map(e => ({ ...e })));
-
-    const createParsed = z
-      .array(intervalBellCreateSchema)
-      .parse(objs.map(e => ({ ...e })));
+    const updateParsed = z.array(intervalBellUpdateSchema).parse(updateList);
+    const createParsed = z.array(intervalBellCreateSchema).parse(createList);
 
     const src = tx || db;
 
-    const list = await IntervalBellService.getMany(objs[0].timerId);
+    const list = await IntervalBellService.getMany(timerId);
     const allIds = list.map(e => e.id);
     const updatedIds = updateParsed.map(e => e.id);
     const idsToDelete = allIds.filter(e => !updatedIds.includes(e));
-    await IntervalBellService.delete(idsToDelete);
-    await IntervalBellService.update(updateParsed, src as Transaction);
-    await IntervalBellService.create(createParsed, src as Transaction);
+
+    if (idsToDelete) await IntervalBellService.delete(idsToDelete);
+    if (updateParsed.length)
+      await IntervalBellService.update(updateParsed, src as Transaction);
+    if (createParsed.length)
+      await IntervalBellService.create(createParsed, src as Transaction);
   }
 }
