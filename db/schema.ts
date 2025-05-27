@@ -60,8 +60,8 @@ export const intervalBellRelations = relations(
 
 export const intervalBellSchema = createSelectSchema(intervalBellTable).extend({
   id: z.number(),
-  timerId: z.number().positive(),
-  duration: z.number().positive(),
+  timerId: z.number(),
+  duration: z.number(),
 });
 
 export const intervalBellCreateSchema = createInsertSchema(intervalBellTable)
@@ -69,21 +69,21 @@ export const intervalBellCreateSchema = createInsertSchema(intervalBellTable)
     id: true,
   })
   .extend({
-    timerId: z.number().positive(),
-    duration: z.number().positive(),
+    timerId: z.number(),
+    duration: z.number(),
   });
 
 export const intervalBellUpdateSchema = createUpdateSchema(intervalBellTable)
   .omit({ timerId: true })
   .extend({
     id: z.number(),
-    duration: z.number().positive(),
+    duration: z.number(),
   });
 
 export const intervalBellFormSchema = intervalBellSchema.extend({
   id: z.number().optional(),
   timerId: z.number().positive().optional(),
-  duration: z.number().positive(),
+  duration: z.number(),
 });
 
 export const intervalBellKeyword = 'intervalBell';

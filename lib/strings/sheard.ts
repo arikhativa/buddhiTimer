@@ -3,6 +3,8 @@ export const sheardStrings = {
   none: 'None',
   noItems: 'No Items Found',
   delete: 'Delete',
+  confirm: 'Confirm',
+  cancel: 'Cancel',
 
   time: {
     hours: 'Hours',

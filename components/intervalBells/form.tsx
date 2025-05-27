@@ -15,6 +15,8 @@ import { INTERVAL_BELL_EVENT } from '~/app/IntervalBellScreen';
 import { useListenValue } from '~/hooks/useListenValue';
 import { formatSeconds } from '~/lib/utils';
 import { timerStrings } from '~/lib/strings/timer';
+import { useAlert } from '~/hooks/useAlert';
+import { AlertDeleteItem } from '../sheard/AlertDeleteItem';
 
 type Props = {
   value: IntervalBellSchema[];
@@ -30,11 +32,13 @@ function Item({
   navigation,
   index,
   onSelect,
+  onLongPress,
 }: {
   item: IntervalBellSchema;
   navigation: NavigationProp<RootStackParamList>;
   index: number;
   onSelect: (i: number) => void;
+  onLongPress: (i: number) => void;
 }) {
   const reference =
     item.reference === 'fromStart'
@@ -47,6 +51,9 @@ function Item({
       onPress={() => {
         onSelect(index);
         navigation.navigate('IntervalBell', { value: item });
+      }}
+      onLongPress={() => {
+        onLongPress(index);
       }}>
       <Large>{formatSeconds(item.duration)}</Large>
       <Muted>{reference}</Muted>
@@ -88,7 +95,7 @@ export function IntervalBellsForm({ value, onChange }: Props) {
     }
   }, [isDirty, isValid, submit]);
 
-  const { fields, append, update } = useFieldArray({
+  const { fields, append, update, remove } = useFieldArray({
     control: control,
     name: 'list',
   });
@@ -115,6 +122,9 @@ export function IntervalBellsForm({ value, onChange }: Props) {
 
   useListenValue(INTERVAL_BELL_EVENT, handleEvent);
 
+  const { open, toggleOpen } = useAlert();
+  const [indexToDel, setIndexToDel] = useState<number | undefined>();
+
   return (
     <View>
       <View>
@@ -127,6 +137,10 @@ export function IntervalBellsForm({ value, onChange }: Props) {
         {fields.map((field, index) => (
           <View key={field.id}>
             <Item
+              onLongPress={i => {
+                setIndexToDel(i);
+                toggleOpen();
+              }}
               item={field}
               navigation={navigation as NavigationProp<RootStackParamList>}
               index={index}
@@ -145,6 +159,11 @@ export function IntervalBellsForm({ value, onChange }: Props) {
         }}>
         <Plus />
       </Button>
+      <AlertDeleteItem
+        open={open}
+        toggleOpen={toggleOpen}
+        onConfirm={() => remove(indexToDel)}
+      />
     </View>
   );
 }
