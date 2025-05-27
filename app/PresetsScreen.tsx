@@ -1,37 +1,34 @@
-import { NavigationProp, useNavigation } from '@react-navigation/native';
-import { FlatList, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import { FlatList, StyleSheet, View } from 'react-native';
 import { Spinner } from '~/components/sheard/Spinner';
 import { Button } from '~/components/ui/button';
 import { Separator } from '~/components/ui/separator';
 import { Large, Muted } from '~/components/ui/typography';
-import { Timer } from '~/db/schema';
 import useTimerListQuery from '~/hooks/useTimerListQuery';
 import { Plus } from '~/lib/icons/Plus';
 import { sheardStrings } from '~/lib/strings/sheard';
 import { formatSeconds } from '~/lib/utils';
-import { RootStackParamList } from './Layout';
+import { AlertDeleteItem } from '~/components/sheard/AlertDeleteItem';
+import { useAlert } from '~/hooks/useAlert';
+import { useEffect, useState } from 'react';
+import { Line } from '~/components/sheard/Line';
+import { TimerService } from '~/services/timer';
+import { useQueryClient } from '@tanstack/react-query';
 
-function Line({
-  item,
-  navigation,
-}: {
-  item: Timer;
-  navigation: NavigationProp<RootStackParamList>;
-}) {
-  return (
-    <TouchableOpacity
-      className="mx-4 py-4 flex-row justify-between items-center"
-      onPress={() => navigation.navigate('Timer', { id: item.id })}>
-      <Large>{item.id}</Large>
-      <Muted>{formatSeconds(item.duration)}</Muted>
-    </TouchableOpacity>
-  );
-}
-
+import { timerKeyword } from '~/db/schema';
 export function PresetsScreen() {
   const navigation = useNavigation();
   const query = useTimerListQuery();
   const { data } = query;
+
+  const { open, toggleOpen } = useAlert();
+  const [idToDelete, setIdToDelete] = useState<number | undefined>();
+
+  const queryClient = useQueryClient();
+
+  const invalid = () => {
+    queryClient.refetchQueries({ queryKey: [timerKeyword] });
+  };
 
   return (
     <Spinner query={query}>
@@ -40,11 +37,19 @@ export function PresetsScreen() {
           contentContainerStyle={styles.container}
           data={data}
           keyExtractor={item => item.id.toString()}
-          renderItem={({ item }) => (
+          renderItem={({ item, index }) => (
             <Line
-              item={item}
-              navigation={navigation as NavigationProp<RootStackParamList>}
-            />
+              index={index}
+              onPress={() => navigation.navigate('Timer', { id: item.id })}
+              onLongPress={() => {
+                setIdToDelete(item.id);
+                toggleOpen();
+              }}>
+              <>
+                <Large>{item.id}</Large>
+                <Muted>{formatSeconds(item.duration)}</Muted>
+              </>
+            </Line>
           )}
           ItemSeparatorComponent={() => <Separator className="mx-5 w-fit" />}
           ListEmptyComponent={
@@ -66,9 +71,20 @@ export function PresetsScreen() {
           }
         />
       </View>
+      <AlertDeleteItem
+        open={open}
+        toggleOpen={toggleOpen}
+        onConfirm={async () => {
+          if (idToDelete !== undefined) {
+            await TimerService.delete(idToDelete);
+            invalid();
+          }
+        }}
+      />
     </Spinner>
   );
 }
+
 const styles = StyleSheet.create({
   container: {
     paddingTop: 10,

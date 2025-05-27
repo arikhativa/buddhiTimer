@@ -17,6 +17,7 @@ import { formatSeconds } from '~/lib/utils';
 import { timerStrings } from '~/lib/strings/timer';
 import { useAlert } from '~/hooks/useAlert';
 import { AlertDeleteItem } from '../sheard/AlertDeleteItem';
+import { Line } from '../sheard/Line';
 
 type Props = {
   value: IntervalBellSchema[];
@@ -27,37 +28,17 @@ const schema = z.object({
   list: z.array(intervalBellFormSchema),
 });
 
-function Item({
-  item,
-  navigation,
-  index,
-  onSelect,
-  onLongPress,
-}: {
-  item: IntervalBellSchema;
-  navigation: NavigationProp<RootStackParamList>;
-  index: number;
-  onSelect: (i: number) => void;
-  onLongPress: (i: number) => void;
-}) {
+function Item({ item }: { item: IntervalBellSchema }) {
   const reference =
     item.reference === 'fromStart'
       ? timerStrings.intervalBells.refrance.start
       : timerStrings.intervalBells.refrance.end;
 
   return (
-    <TouchableOpacity
-      className="mx-4 py-4 flex-row justify-between items-center"
-      onPress={() => {
-        onSelect(index);
-        navigation.navigate('IntervalBell', { value: item });
-      }}
-      onLongPress={() => {
-        onLongPress(index);
-      }}>
+    <>
       <Large>{formatSeconds(item.duration)}</Large>
       <Muted>{reference}</Muted>
-    </TouchableOpacity>
+    </>
   );
 }
 
@@ -136,17 +117,18 @@ export function IntervalBellsForm({ value, onChange }: Props) {
         )}
         {fields.map((field, index) => (
           <View key={field.id}>
-            <Item
+            <Line
+              index={index}
               onLongPress={i => {
                 setIndexToDel(i);
                 toggleOpen();
               }}
-              item={field}
-              navigation={navigation as NavigationProp<RootStackParamList>}
-              index={index}
-              onSelect={setEntry}
-            />
-
+              onPress={() => {
+                setEntry(index);
+                navigation.navigate('IntervalBell', { value: field });
+              }}>
+              <Item item={field} />
+            </Line>
             <Separator className="mx-5 w-fit" />
           </View>
         ))}
