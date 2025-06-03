@@ -32,6 +32,7 @@ import { sheardStrings } from '~/lib/strings/sheard';
 import { INERVAL_BELLS_EVENT } from '~/app/IntervalBellsScreen';
 import { useListenValue } from '~/hooks/useListenValue';
 import { Input } from '../ui/input';
+import { Play } from '~/lib/icons/Play';
 
 type Props = PropsWithChildren & { data?: Timer };
 type FormType = TimerUpdate | TimerCreate;
@@ -104,7 +105,7 @@ export function TimerForm({ data }: Props) {
   });
 
   return (
-    <View className="px-8 mt-20 gap-4">
+    <View className="flex-1 px-8 mt-20 gap-4">
       <Form {...form}>
         <FormField
           control={form.control}
@@ -196,6 +197,16 @@ export function TimerForm({ data }: Props) {
           )}
         </Button>
       </Form>
+      <View className="flex-1 flex mb-24 justify-center ">
+        <View className="flex justify-center items-center ">
+          <Button
+            variant={'outline'}
+            className="border-primary border-2 shadow-xl shadow-primary rounded-full flex justify-center items-center w-20 !h-20"
+            onPress={() => {}}>
+            <Play className="text-primary" size={30} />
+          </Button>
+        </View>
+      </View>
     </View>
   );
 }
