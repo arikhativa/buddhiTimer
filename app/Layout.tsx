@@ -3,7 +3,6 @@ import {
   ThemeProvider,
   DefaultTheme,
   DarkTheme,
-  // StaticParamList,
 } from '@react-navigation/native';
 import * as React from 'react';
 import { Platform, StatusBar, StyleSheet, View } from 'react-native';
@@ -26,6 +25,7 @@ import {
   IntervalBellsScreen,
 } from './IntervalBellsScreen';
 import { IntervalBellParams, IntervalBellScreen } from './IntervalBellScreen';
+import { CountdownParams, CountdownScreen } from './CountdownScreen';
 
 export type RootStackParamList = {
   Home: undefined;
@@ -33,6 +33,7 @@ export type RootStackParamList = {
   TimerWheel: TimerWheelParams;
   IntervalBells: IntervalBellsParams;
   IntervalBell: IntervalBellParams;
+  Countdown: CountdownParams;
   Presets: undefined;
   Settings: undefined;
 };
@@ -42,6 +43,12 @@ const RootStack = createNativeStackNavigator<RootStackParamList>({
   screens: {
     Home: {
       screen: HomeScreen,
+      options: {
+        headerShown: false,
+      },
+    },
+    Countdown: {
+      screen: CountdownScreen,
       options: {
         headerShown: false,
       },

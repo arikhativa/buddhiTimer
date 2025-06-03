@@ -202,7 +202,9 @@ export function TimerForm({ data }: Props) {
           <Button
             variant={'outline'}
             className="border-primary border-2 shadow-xl shadow-primary rounded-full flex justify-center items-center w-20 !h-20"
-            onPress={() => {}}>
+            onPress={() => {
+              navigation.navigate('Countdown', { timerId: data.id });
+            }}>
             <Play className="text-primary" size={30} />
           </Button>
         </View>
