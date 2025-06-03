@@ -15,6 +15,20 @@
       "when": 1746526168414,
       "tag": "0001_seed-settings",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1748934716139,
+      "tag": "0002_adorable_sinister_six",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "6",
+      "when": 1748938199330,
+      "tag": "0003_previous_wendigo",
+      "breakpoints": true
     }
   ]
 }

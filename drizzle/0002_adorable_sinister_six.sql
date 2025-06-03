@@ -1,0 +1,1 @@
+ALTER TABLE `timer_table` ADD `name` text;

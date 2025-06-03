@@ -101,6 +101,7 @@ export const timerTable = sqliteTable('timer_table', {
   id: int().primaryKey(),
   duration: int().notNull(),
   warmUp: int(),
+  name: text().notNull().default(''),
 });
 
 export const timerRelations = relations(timerTable, ({ many }) => ({
@@ -112,6 +113,7 @@ export const timerSchema = createSelectSchema(timerTable).extend({
   duration: z.number(),
   warmUp: z.number().nullable(),
   intervalBells: z.array(intervalBellSchema),
+  name: z.string().optional(),
 });
 
 export const timerCreateSchema = createInsertSchema(timerTable)
@@ -122,6 +124,7 @@ export const timerCreateSchema = createInsertSchema(timerTable)
     duration: z.number(),
     warmUp: z.number().nullable(),
     intervalBells: z.array(intervalBellFormSchema),
+    name: z.string().optional(),
   });
 
 export const timerUpdateSchema = createUpdateSchema(timerTable).extend({
@@ -129,6 +132,7 @@ export const timerUpdateSchema = createUpdateSchema(timerTable).extend({
   duration: z.number(),
   warmUp: z.number().nullable(),
   intervalBells: z.array(intervalBellFormSchema),
+  name: z.string().optional(),
 });
 
 export const timerKeyword = 'timer';

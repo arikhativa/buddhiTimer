@@ -32,6 +32,7 @@ import { sheardStrings } from '~/lib/strings/sheard';
 import { FormProvider } from 'react-hook-form';
 import { INERVAL_BELLS_EVENT } from '~/app/IntervalBellsScreen';
 import { useListenValue } from '~/hooks/useListenValue';
+import { Input } from '../ui/input';
 
 type Props = PropsWithChildren & { data?: Timer };
 type FormType = TimerUpdate | TimerCreate;
@@ -64,6 +65,7 @@ export function TimerForm({ data }: Props) {
           duration: 0,
           warmUp: null,
           intervalBells: [],
+          name: '',
         },
     isAutoSubmit: false,
     handleOnSuccess,
@@ -103,75 +105,92 @@ export function TimerForm({ data }: Props) {
   });
 
   return (
-    <FormProvider {...form}>
-      <View className="px-8 mt-20 gap-4">
-        <Form {...form}>
-          <FormField
-            control={form.control}
-            name="duration"
-            render={({ field: { value, name } }) => (
-              <FormItem className="flex flex-row justify-between items-center">
-                <FormLabel>{timerStrings.form.duration}</FormLabel>
-                <FormControl>
-                  <Button
-                    onPress={() => {
-                      setEntry(name);
-                      navigation.navigate('TimerWheel', { value: value });
-                    }}>
-                    <Text>{formatSeconds(value)}</Text>
-                  </Button>
-                </FormControl>
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="warmUp"
-            render={({ field: { value, name } }) => (
-              <FormItem className="flex flex-row justify-between items-center">
-                <FormLabel>{timerStrings.form.warmUp}</FormLabel>
-                <FormControl>
-                  <Button
-                    onPress={() => {
-                      setEntry(name);
-                      navigation.navigate('TimerWheel', { value: value });
-                    }}>
-                    <Text>{formatSeconds(value)}</Text>
-                  </Button>
-                </FormControl>
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="intervalBells"
-            render={({ field: { value, name } }) => (
-              <FormItem className="flex flex-row justify-between items-center">
-                <FormLabel>{timerStrings.form.intervalBells}</FormLabel>
-                <FormControl>
-                  <Button
-                    onPress={() => {
-                      setEntry(name);
-                      navigation.navigate('IntervalBells', {
-                        list: value,
-                      });
-                    }}>
-                    <Text>{bellsText(value.length)}</Text>
-                  </Button>
-                </FormControl>
-              </FormItem>
-            )}
-          />
-          <Button
-            variant={'outline'}
-            onPress={() => {
-              submit();
-            }}>
-            {isUpdate ? <Save /> : <Plus />}
-          </Button>
-        </Form>
-      </View>
-    </FormProvider>
+    <View className="px-8 mt-20 gap-4">
+      <Form {...form}>
+        <FormField
+          control={form.control}
+          name="name"
+          render={({ field }) => (
+            <FormItem className="flex flex-row justify-between items-center">
+              <FormLabel>{timerStrings.form.name}</FormLabel>
+              <FormControl>
+                <Input
+                  className="min-w-28 text-center"
+                  value={field.value}
+                  onChangeText={field.onChange}
+                />
+              </FormControl>
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="duration"
+          render={({ field: { value, name } }) => (
+            <FormItem className="flex flex-row justify-between items-center">
+              <FormLabel>{timerStrings.form.duration}</FormLabel>
+              <FormControl>
+                <Button
+                  className="min-w-28"
+                  onPress={() => {
+                    setEntry(name);
+                    navigation.navigate('TimerWheel', { value: value });
+                  }}>
+                  <Text>{formatSeconds(value)}</Text>
+                </Button>
+              </FormControl>
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="warmUp"
+          render={({ field: { value, name } }) => (
+            <FormItem className="flex flex-row justify-between items-center">
+              <FormLabel>{timerStrings.form.warmUp}</FormLabel>
+              <FormControl>
+                <Button
+                  className="min-w-28"
+                  onPress={() => {
+                    setEntry(name);
+                    navigation.navigate('TimerWheel', { value: value });
+                  }}>
+                  <Text>{formatSeconds(value)}</Text>
+                </Button>
+              </FormControl>
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="intervalBells"
+          render={({ field: { value, name } }) => (
+            <FormItem className="flex flex-row justify-between items-center">
+              <FormLabel>{timerStrings.form.intervalBells}</FormLabel>
+              <FormControl>
+                <Button
+                  className="min-w-28"
+                  onPress={() => {
+                    setEntry(name);
+                    navigation.navigate('IntervalBells', {
+                      list: value,
+                    });
+                  }}>
+                  <Text>{bellsText(value.length)}</Text>
+                </Button>
+              </FormControl>
+            </FormItem>
+          )}
+        />
+        <Button
+          variant={'outline'}
+          onPress={() => {
+            submit();
+          }}>
+          {isUpdate ? <Save /> : <Plus />}
+        </Button>
+      </Form>
+    </View>
   );
 }
 

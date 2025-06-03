@@ -38,7 +38,7 @@ export function AlertDeleteItem({
           <AlertDialogCancel onPress={onDecline}>
             <Text>{sheardStrings.cancel}</Text>
           </AlertDialogCancel>
-          <AlertDialogAction onPress={onConfirm}>
+          <AlertDialogAction className="bg-destructive" onPress={onConfirm}>
             <Text>{sheardStrings.confirm}</Text>
           </AlertDialogAction>
         </AlertDialogFooter>
