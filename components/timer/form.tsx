@@ -203,7 +203,11 @@ export function TimerForm({ data }: Props) {
             variant={'outline'}
             className="border-primary border-2 shadow-xl shadow-primary rounded-full flex justify-center items-center w-20 !h-20"
             onPress={() => {
-              navigation.navigate('Countdown', { timerId: data.id });
+              const values = form.getValues();
+              const serializedObject = JSON.stringify(values);
+              const timerEncoded = encodeURIComponent(serializedObject);
+
+              navigation.navigate('Countdown', { timerEncoded });
             }}>
             <Play className="text-primary" size={30} />
           </Button>
