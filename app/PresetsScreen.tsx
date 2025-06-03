@@ -10,7 +10,7 @@ import { sheardStrings } from '~/lib/strings/sheard';
 import { formatSeconds } from '~/lib/utils';
 import { AlertDeleteItem } from '~/components/sheard/AlertDeleteItem';
 import { useAlert } from '~/hooks/useAlert';
-import {  useState } from 'react';
+import { useState } from 'react';
 import { Line } from '~/components/sheard/Line';
 import { TimerService } from '~/services/timer';
 import { useQueryClient } from '@tanstack/react-query';
@@ -65,7 +65,7 @@ export function PresetsScreen() {
                 }}
                 variant={'ghost'}
                 size={'icon'}>
-                <Plus />
+                <Plus className="text-foreground" />
               </Button>
             </>
           }

@@ -153,7 +153,7 @@ export default function Layout({ showErrorScreen }: Props) {
         <View className="flex-1" style={container}>
           <Navigation theme={isDarkColorScheme ? DARK_THEME : LIGHT_THEME} />
           <PortalHost />
-          <Toast config={toastConfig} />
+          <Toast position="bottom" config={toastConfig} />
         </View>
       )}
     </ThemeProvider>

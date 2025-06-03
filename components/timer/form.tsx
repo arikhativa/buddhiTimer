@@ -29,7 +29,6 @@ import TimerMenu from './TimerMenu';
 import { formatSeconds } from '~/lib/utils';
 import { TIMER_WHEEL_EVENT } from '~/app/TimerWheelScreen';
 import { sheardStrings } from '~/lib/strings/sheard';
-import { FormProvider } from 'react-hook-form';
 import { INERVAL_BELLS_EVENT } from '~/app/IntervalBellsScreen';
 import { useListenValue } from '~/hooks/useListenValue';
 import { Input } from '../ui/input';
@@ -132,6 +131,7 @@ export function TimerForm({ data }: Props) {
               <FormControl>
                 <Button
                   className="min-w-28"
+                  variant={'outline'}
                   onPress={() => {
                     setEntry(name);
                     navigation.navigate('TimerWheel', { value: value });
@@ -150,6 +150,7 @@ export function TimerForm({ data }: Props) {
               <FormLabel>{timerStrings.form.warmUp}</FormLabel>
               <FormControl>
                 <Button
+                  variant={'outline'}
                   className="min-w-28"
                   onPress={() => {
                     setEntry(name);
@@ -170,6 +171,7 @@ export function TimerForm({ data }: Props) {
               <FormControl>
                 <Button
                   className="min-w-28"
+                  variant={'outline'}
                   onPress={() => {
                     setEntry(name);
                     navigation.navigate('IntervalBells', {
@@ -187,7 +189,11 @@ export function TimerForm({ data }: Props) {
           onPress={() => {
             submit();
           }}>
-          {isUpdate ? <Save /> : <Plus />}
+          {isUpdate ? (
+            <Save className="text-foreground" />
+          ) : (
+            <Plus className="text-foreground" />
+          )}
         </Button>
       </Form>
     </View>
