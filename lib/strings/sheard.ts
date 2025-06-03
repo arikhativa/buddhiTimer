@@ -5,6 +5,7 @@ export const sheardStrings = {
   delete: 'Delete',
   confirm: 'Confirm',
   cancel: 'Cancel',
+  finish: 'Finish',
 
   time: {
     hours: 'Hours',

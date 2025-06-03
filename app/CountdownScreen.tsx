@@ -1,7 +1,7 @@
 import { StaticScreenProps } from '@react-navigation/native';
-import { H1 } from '~/components/ui/typography';
 import { timerSchema } from '~/db/schema';
 import { ErrorScreen } from './ErrorScreen';
+import { CountdownLogic } from '~/components/countdown/CountdownLogic';
 
 export type CountdownParams = {
   timerEncoded: string;
@@ -28,5 +28,5 @@ export function CountdownScreen({ route }: Props) {
 
   const timer = pasred.data;
 
-  return <H1>{timer.name}</H1>;
+  return <CountdownLogic timer={timer} />;
 }

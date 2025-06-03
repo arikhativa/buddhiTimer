@@ -14,4 +14,8 @@ export const timerStrings = {
       end: 'Before End',
     },
   },
+  countdown: {
+    warmUp: 'Warm Up',
+    discard: 'Discard session',
+  },
 };
