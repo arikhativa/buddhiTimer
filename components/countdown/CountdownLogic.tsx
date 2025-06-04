@@ -36,11 +36,14 @@ export function CountdownLogic({ timer }: Props) {
   const [colors, setColors] = useState<ColorFormat>(WHITE_RGB);
   const theme = useTheme();
 
-  const player = useRef<SoundPlayer | null>(null); // Initialize as null
+  const player = useRef<SoundPlayer | null>(null);
 
   useEffect(() => {
     if (!player.current) {
       player.current = new SoundPlayer('gong.mp3');
+      setTimeout(() => {
+        player.current?.play();
+      }, 100);
     }
 
     return () => {
@@ -68,6 +71,7 @@ export function CountdownLogic({ timer }: Props) {
 
   const handleTimerComplete = () => {
     if (isWarmUp) {
+      handlePlay();
       setIsWarmUp(false);
     } else {
       setIsDone(true);
