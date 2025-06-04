@@ -12,7 +12,7 @@ import { Pause } from '~/lib/icons/Pause';
 import { sheardStrings } from '~/lib/strings/sheard';
 import { formatSeconds } from '~/lib/utils';
 import { Play } from '~/lib/icons/Play';
-import { useTheme } from '@react-navigation/native';
+import { useNavigation, useTheme } from '@react-navigation/native';
 import { SoundPlayer } from '../../lib/SoundPlayer';
 
 type Props = {
@@ -34,6 +34,8 @@ export function CountdownLogic({ timer }: Props) {
   const [duration, setDuration] = useState(timer.warmUp || timer.duration);
   const [key, setKey] = useState(0);
   const [colors, setColors] = useState<ColorFormat>(WHITE_RGB);
+
+  const navigation = useNavigation();
   const theme = useTheme();
 
   const player = useRef<SoundPlayer | null>(null);
@@ -41,9 +43,11 @@ export function CountdownLogic({ timer }: Props) {
   useEffect(() => {
     if (!player.current) {
       player.current = new SoundPlayer('gong.mp3');
-      setTimeout(() => {
-        player.current?.play();
-      }, 100);
+      if (!isWarmUp) {
+        setTimeout(() => {
+          player.current?.play();
+        }, 100);
+      }
     }
 
     return () => {
@@ -52,7 +56,7 @@ export function CountdownLogic({ timer }: Props) {
   }, []);
 
   const handlePlay = () => {
-    player.current?.play();
+    player.current?.play(true);
   };
 
   const bells = getIntervalBells(
@@ -66,18 +70,19 @@ export function CountdownLogic({ timer }: Props) {
   }, [theme.colors.primary]);
 
   const toggleisPlaying = useCallback(() => {
+    player.current?.togglePlay();
     setIsPlaying(prev => !prev);
   }, [setIsPlaying]);
 
   const handleTimerComplete = () => {
     if (isWarmUp) {
-      handlePlay();
       setIsWarmUp(false);
     } else {
       setIsDone(true);
       setColors(WHITE_RGB);
       setIsPlaying(false);
     }
+    handlePlay();
     setDuration(timer.duration);
     setKey(prev => ++prev);
   };
@@ -110,11 +115,13 @@ export function CountdownLogic({ timer }: Props) {
           }}
         </CountdownCircleTimer>
       </View>
-      <View className=" mb-20 mx-4 gap-4">
+      <View className="mb-20 mx-4 gap-4">
         <Button
           variant={'link'}
           className="flex justify-center items-center mb-20"
-          onPress={toggleisPlaying}>
+          onPress={() => {
+            toggleisPlaying();
+          }}>
           {isPlaying ? (
             <Pause className="text-foreground" size={50} />
           ) : (
@@ -125,13 +132,17 @@ export function CountdownLogic({ timer }: Props) {
         <Button
           className={isPlaying ? 'opacity-0' : ''}
           variant={'secondary'}
-          onPress={() => {}}>
+          onPress={() => {
+            navigation.goBack();
+          }}>
           <Large className="">{sheardStrings.finish}</Large>
         </Button>
         <Button
           className={isPlaying ? 'opacity-0' : ''}
           variant={'ghost'}
-          onPress={() => {}}>
+          onPress={() => {
+            navigation.goBack();
+          }}>
           <P>{timerStrings.countdown.discard}</P>
         </Button>
       </View>
@@ -153,6 +164,8 @@ function getIntervalBells(
     if (e.reference === 'beforeEnd') {
       entry = e.duration;
     }
+
+    if (entry < 0) continue;
 
     ret[entry] = {
       isDirty: false,
