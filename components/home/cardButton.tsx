@@ -23,7 +23,7 @@ export function CardButton({ disabled, title, icon: Icon, onPress }: Props) {
           <CardTitle>{title}</CardTitle>
         </CardHeader>
         <CardContent className="flex justify-center items-center">
-          <Icon color={theme.colors.primary} />
+          <Icon color={theme.colors.text} />
         </CardContent>
       </Card>
     </Pressable>
