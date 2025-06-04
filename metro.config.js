@@ -1,5 +1,5 @@
-const {getDefaultConfig} = require('@react-native/metro-config');
-const {withNativeWind} = require('nativewind/metro');
+const { getDefaultConfig } = require('@react-native/metro-config');
+const { withNativeWind } = require('nativewind/metro');
 const path = require('path');
 
 const config = getDefaultConfig(__dirname);
@@ -15,4 +15,6 @@ config.resolver.extraNodeModules = {
 // for DB
 config.resolver.sourceExts.push('sql');
 
-module.exports = withNativeWind(config, {input: './global.css'});
+config.resolver.assetExts.push('mp3');
+
+module.exports = withNativeWind(config, { input: './global.css' });

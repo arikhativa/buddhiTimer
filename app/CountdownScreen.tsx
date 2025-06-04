@@ -1,5 +1,5 @@
 import { StaticScreenProps } from '@react-navigation/native';
-import { intervalBellFormSchema, timerMemory, timerSchema } from '~/db/schema';
+import { timerMemory } from '~/db/schema';
 import { ErrorScreen } from './ErrorScreen';
 import { CountdownLogic } from '~/components/countdown/CountdownLogic';
 

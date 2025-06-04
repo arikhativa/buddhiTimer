@@ -6,13 +6,14 @@ import {
 } from 'react-native-countdown-circle-timer';
 import { H1, Large, P } from '~/components/ui/typography';
 import { timerStrings } from '~/lib/strings/timer';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { Button } from '../ui/button';
 import { Pause } from '~/lib/icons/Pause';
 import { sheardStrings } from '~/lib/strings/sheard';
 import { formatSeconds } from '~/lib/utils';
 import { Play } from '~/lib/icons/Play';
 import { useTheme } from '@react-navigation/native';
+import { SoundPlayer } from '../../lib/SoundPlayer';
 
 type Props = {
   timer: TimerMemory;
@@ -32,11 +33,30 @@ export function CountdownLogic({ timer }: Props) {
   const [isWarmUp, setIsWarmUp] = useState(!!timer.warmUp);
   const [duration, setDuration] = useState(timer.warmUp || timer.duration);
   const [key, setKey] = useState(0);
-
   const [colors, setColors] = useState<ColorFormat>(WHITE_RGB);
   const theme = useTheme();
 
-  const bells = getIntervalBells(timer.duration, timer.intervalBells);
+  const player = useRef<SoundPlayer | null>(null); // Initialize as null
+
+  useEffect(() => {
+    if (!player.current) {
+      player.current = new SoundPlayer('gong.mp3');
+    }
+
+    return () => {
+      player.current?.release();
+    };
+  }, []);
+
+  const handlePlay = () => {
+    player.current?.play();
+  };
+
+  const bells = getIntervalBells(
+    timer.duration,
+    handlePlay,
+    timer.intervalBells,
+  );
 
   useEffect(() => {
     setColors(theme.colors.primary as ColorFormat);
@@ -117,6 +137,7 @@ export function CountdownLogic({ timer }: Props) {
 
 function getIntervalBells(
   timerDuration: number,
+  ring: () => void,
   list?: TimerMemory['intervalBells'],
 ) {
   const ret: BellsMeta = {};
@@ -132,7 +153,8 @@ function getIntervalBells(
     ret[entry] = {
       isDirty: false,
       handler: () => {
-        console.log('refrance: ', e.reference, ' duration: ', e.duration);
+        console.log('bell: ', e.duration);
+        ring();
       },
     };
   }
