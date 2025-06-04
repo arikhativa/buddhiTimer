@@ -17,5 +17,6 @@ export const timerStrings = {
   countdown: {
     warmUp: 'Warm Up',
     discard: 'Discard session',
+    done: 'Done',
   },
 };

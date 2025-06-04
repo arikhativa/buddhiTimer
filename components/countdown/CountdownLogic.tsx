@@ -1,68 +1,98 @@
 import { View } from 'react-native';
 import { Timer } from '~/db/schema';
-import { CountdownCircleTimer } from 'react-native-countdown-circle-timer';
+import {
+  ColorFormat,
+  CountdownCircleTimer,
+  MultipleColors,
+} from 'react-native-countdown-circle-timer';
 import { H1, Large, P } from '~/components/ui/typography';
 import { timerStrings } from '~/lib/strings/timer';
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Button } from '../ui/button';
-import { Play } from '~/lib/icons/Play';
 import { Pause } from '~/lib/icons/Pause';
 import { sheardStrings } from '~/lib/strings/sheard';
 import { formatSeconds } from '~/lib/utils';
+import { Play } from '~/lib/icons/Play';
+import { useTheme } from '@react-navigation/native';
 
 type Props = {
   timer: Timer;
 };
 
+const WHITE_RGB = '#FFFFFF';
+
 export function CountdownLogic({ timer }: Props) {
-  const [play, setPlay] = useState(true);
+  const [isPlaying, setIsPlaying] = useState(true);
+  const [isDone, setIsDone] = useState(false);
   const [isWarmUp, setIsWarmUp] = useState(!!timer.warmUp);
   const [duration, setDuration] = useState(timer.warmUp || timer.duration);
+  const [key, setKey] = useState(0);
 
-  const togglePlay = useCallback(() => {
-    setPlay(prev => !prev);
-  }, [setPlay]);
+  const [colors, setColors] = useState<ColorFormat>(WHITE_RGB);
+  const theme = useTheme();
+
+  useEffect(() => {
+    setColors(theme.colors.primary as ColorFormat);
+  }, [theme.colors.primary]);
+
+  const toggleisPlaying = useCallback(() => {
+    setIsPlaying(prev => !prev);
+  }, [setIsPlaying]);
 
   const handleTimerComplete = () => {
     if (isWarmUp) {
       setIsWarmUp(false);
-      setDuration(timer.duration);
+    } else {
+      setIsDone(true);
+      setColors(WHITE_RGB);
+      setIsPlaying(false);
     }
+    setDuration(timer.duration);
+    setKey(prev => ++prev);
   };
+
   return (
     <View className=" flex-1 justify-center ">
       <View className="flex-1 flex justify-center items-center ">
         {isWarmUp ? (
           <Large className="mb-4">{timerStrings.countdown.warmUp}</Large>
         ) : (
-          <Large className="mb-4"> </Large>
+          <Large className="mb-4">
+            {isDone ? timerStrings.countdown.done : ' '}
+          </Large>
         )}
         <CountdownCircleTimer
-          isPlaying={play}
+          key={key}
+          isPlaying={isPlaying}
           onComplete={handleTimerComplete}
           duration={duration}
-          colors={['#004777', '#F7B801', '#A30000', '#A30000']}
-          colorsTime={[7, 5, 2, 0]}>
+          colors={colors}>
           {({ remainingTime }) => <H1>{formatSeconds(remainingTime)}</H1>}
         </CountdownCircleTimer>
       </View>
-      <View className=" mb-20 mx-4">
+      <View className=" mb-20 mx-4 gap-4">
         <Button
           variant={'link'}
           className="flex justify-center items-center mb-20"
-          onPress={togglePlay}>
-          {play ? (
+          onPress={toggleisPlaying}>
+          {isPlaying ? (
             <Pause className="text-foreground" size={50} />
           ) : (
-            <Play className="text-foreground" size={50} />
+            !isDone && <Play className="text-foreground" size={50} />
           )}
         </Button>
 
-        <Button className="" variant={'secondary'} onPress={() => {}}>
+        <Button
+          className={isPlaying ? 'opacity-0' : ''}
+          variant={'secondary'}
+          onPress={() => {}}>
           <Large className="">{sheardStrings.finish}</Large>
         </Button>
-        <Button className="" variant={'ghost'} onPress={() => {}}>
-          <P className="">{timerStrings.countdown.discard}</P>
+        <Button
+          className={isPlaying ? 'opacity-0' : ''}
+          variant={'ghost'}
+          onPress={() => {}}>
+          <P>{timerStrings.countdown.discard}</P>
         </Button>
       </View>
     </View>
