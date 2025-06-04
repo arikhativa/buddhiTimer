@@ -1,9 +1,8 @@
 import { View } from 'react-native';
-import { Timer, TimerMemory } from '~/db/schema';
+import { TimerMemory } from '~/db/schema';
 import {
   ColorFormat,
   CountdownCircleTimer,
-  MultipleColors,
 } from 'react-native-countdown-circle-timer';
 import { H1, Large, P } from '~/components/ui/typography';
 import { timerStrings } from '~/lib/strings/timer';
@@ -118,7 +117,7 @@ export function CountdownLogic({ timer }: Props) {
 
 function getIntervalBells(
   timerDuration: number,
-  list?: Timer['intervalBells'],
+  list?: TimerMemory['intervalBells'],
 ) {
   const ret: BellsMeta = {};
   if (!list || !list.length) return ret;
