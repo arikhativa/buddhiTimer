@@ -1,5 +1,5 @@
 import { StaticScreenProps } from '@react-navigation/native';
-import { timerSchema } from '~/db/schema';
+import { intervalBellFormSchema, timerMemory, timerSchema } from '~/db/schema';
 import { ErrorScreen } from './ErrorScreen';
 import { CountdownLogic } from '~/components/countdown/CountdownLogic';
 
@@ -19,7 +19,7 @@ export function CountdownScreen({ route }: Props) {
 
   const decoded = decodeURIComponent(timerEncoded);
   const rawString = JSON.parse(decoded);
-  const pasred = timerSchema.safeParse(rawString);
+  const pasred = timerMemory.safeParse(rawString);
 
   if (pasred.error) {
     console.error('Countdown error: ', pasred.error);

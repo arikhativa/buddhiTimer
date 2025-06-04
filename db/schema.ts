@@ -86,12 +86,22 @@ export const intervalBellFormSchema = intervalBellSchema.extend({
   duration: z.number(),
 });
 
+export const intervalBellMemory = intervalBellSchema
+  .omit({
+    id: true,
+    timerId: true,
+  })
+  .extend({
+    duration: z.number(),
+  });
+
 export const intervalBellKeyword = 'intervalBell';
 
 export type IntervalBell = z.input<typeof intervalBellSchema>;
 export type IntervalBellCreate = z.input<typeof intervalBellCreateSchema>;
 export type IntervalBellUpdate = z.input<typeof intervalBellUpdateSchema>;
 export type IntervalBellSchema = z.input<typeof intervalBellFormSchema>;
+export type IntervalBellMemory = z.input<typeof intervalBellMemory>;
 
 ////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////// Timer /////////////////////////////////////
@@ -115,6 +125,15 @@ export const timerSchema = createSelectSchema(timerTable).extend({
   intervalBells: z.array(intervalBellSchema),
   name: z.string().optional(),
 });
+
+export const timerMemory = createSelectSchema(timerTable)
+  .omit({ id: true })
+  .extend({
+    duration: z.number(),
+    warmUp: z.number().nullable(),
+    intervalBells: z.array(intervalBellMemory),
+    name: z.string().optional(),
+  });
 
 export const timerCreateSchema = createInsertSchema(timerTable)
   .omit({
@@ -140,3 +159,4 @@ export const timerKeyword = 'timer';
 export type Timer = z.input<typeof timerSchema>;
 export type TimerCreate = z.input<typeof timerCreateSchema>;
 export type TimerUpdate = z.input<typeof timerUpdateSchema>;
+export type TimerMemory = z.input<typeof timerMemory>;

@@ -1,5 +1,5 @@
 import { View } from 'react-native';
-import { Timer } from '~/db/schema';
+import { Timer, TimerMemory } from '~/db/schema';
 import {
   ColorFormat,
   CountdownCircleTimer,
@@ -16,9 +16,15 @@ import { Play } from '~/lib/icons/Play';
 import { useTheme } from '@react-navigation/native';
 
 type Props = {
-  timer: Timer;
+  timer: TimerMemory;
 };
 
+interface BellsMeta {
+  [key: number]: {
+    isDirty: boolean;
+    handler: () => void;
+  };
+}
 const WHITE_RGB = '#FFFFFF';
 
 export function CountdownLogic({ timer }: Props) {
@@ -30,6 +36,8 @@ export function CountdownLogic({ timer }: Props) {
 
   const [colors, setColors] = useState<ColorFormat>(WHITE_RGB);
   const theme = useTheme();
+
+  const bells = getIntervalBells(timer.duration, timer.intervalBells);
 
   useEffect(() => {
     setColors(theme.colors.primary as ColorFormat);
@@ -67,7 +75,16 @@ export function CountdownLogic({ timer }: Props) {
           onComplete={handleTimerComplete}
           duration={duration}
           colors={colors}>
-          {({ remainingTime }) => <H1>{formatSeconds(remainingTime)}</H1>}
+          {({ remainingTime }) => {
+            if (!isWarmUp) {
+              const bell = bells[remainingTime];
+              if (bell && !bell.isDirty) {
+                bell.isDirty = true;
+                bell.handler();
+              }
+            }
+            return <H1>{formatSeconds(remainingTime)}</H1>;
+          }}
         </CountdownCircleTimer>
       </View>
       <View className=" mb-20 mx-4 gap-4">
@@ -97,4 +114,29 @@ export function CountdownLogic({ timer }: Props) {
       </View>
     </View>
   );
+}
+
+function getIntervalBells(
+  timerDuration: number,
+  list?: Timer['intervalBells'],
+) {
+  const ret: BellsMeta = {};
+  if (!list || !list.length) return ret;
+
+  for (const e of list) {
+    let entry = timerDuration - e.duration;
+
+    if (e.reference === 'beforeEnd') {
+      entry = e.duration;
+    }
+
+    ret[entry] = {
+      isDirty: false,
+      handler: () => {
+        console.log('refrance: ', e.reference, ' duration: ', e.duration);
+      },
+    };
+  }
+
+  return ret;
 }

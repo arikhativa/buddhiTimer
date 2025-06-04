@@ -139,7 +139,7 @@ export function IntervalBellsForm({ value, onChange }: Props) {
         onPress={() => {
           append({ duration: 0, reference: 'fromStart' });
         }}>
-        <Plus />
+        <Plus className="text-foreground" />
       </Button>
       <AlertDeleteItem
         open={open}
