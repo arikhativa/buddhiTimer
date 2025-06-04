@@ -1,14 +1,14 @@
 import { View } from 'react-native';
 import { Timer } from '~/db/schema';
 import { CountdownCircleTimer } from 'react-native-countdown-circle-timer';
-import { H1, H2, Large, P } from '~/components/ui/typography';
+import { H1, Large, P } from '~/components/ui/typography';
 import { timerStrings } from '~/lib/strings/timer';
 import { useCallback, useState } from 'react';
 import { Button } from '../ui/button';
 import { Play } from '~/lib/icons/Play';
 import { Pause } from '~/lib/icons/Pause';
 import { sheardStrings } from '~/lib/strings/sheard';
-import { CircleButton } from '../sheard/CircleButton';
+import { formatSeconds } from '~/lib/utils';
 
 type Props = {
   timer: Timer;
@@ -16,25 +16,34 @@ type Props = {
 
 export function CountdownLogic({ timer }: Props) {
   const [play, setPlay] = useState(true);
+  const [isWarmUp, setIsWarmUp] = useState(!!timer.warmUp);
+  const [duration, setDuration] = useState(timer.warmUp || timer.duration);
 
   const togglePlay = useCallback(() => {
     setPlay(prev => !prev);
   }, [setPlay]);
 
-  let isWarmup = !!timer.warmUp;
-
+  const handleTimerComplete = () => {
+    if (isWarmUp) {
+      setIsWarmUp(false);
+      setDuration(timer.duration);
+    }
+  };
   return (
     <View className=" flex-1 justify-center ">
-      {isWarmup && (
-        <Large className="mb-4">{timerStrings.countdown.warmUp}</Large>
-      )}
       <View className="flex-1 flex justify-center items-center ">
+        {isWarmUp ? (
+          <Large className="mb-4">{timerStrings.countdown.warmUp}</Large>
+        ) : (
+          <Large className="mb-4"> </Large>
+        )}
         <CountdownCircleTimer
           isPlaying={play}
-          duration={7}
+          onComplete={handleTimerComplete}
+          duration={duration}
           colors={['#004777', '#F7B801', '#A30000', '#A30000']}
           colorsTime={[7, 5, 2, 0]}>
-          {({ remainingTime }) => <H1>{remainingTime}</H1>}
+          {({ remainingTime }) => <H1>{formatSeconds(remainingTime)}</H1>}
         </CountdownCircleTimer>
       </View>
       <View className=" mb-20 mx-4">
@@ -42,7 +51,11 @@ export function CountdownLogic({ timer }: Props) {
           variant={'link'}
           className="flex justify-center items-center mb-20"
           onPress={togglePlay}>
-          {play ? <Pause size={50} /> : <Play size={50} />}
+          {play ? (
+            <Pause className="text-foreground" size={50} />
+          ) : (
+            <Play className="text-foreground" size={50} />
+          )}
         </Button>
 
         <Button className="" variant={'secondary'} onPress={() => {}}>
