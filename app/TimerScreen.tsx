@@ -15,7 +15,7 @@ export function TimerScreen({ route }: Props) {
   const query = useTimerQuery(id);
 
   return (
-    <Spinner query={query} allowEmpty>
+    <Spinner query={query} allowEmpty={!id}>
       <TimerForm data={query.data} />
     </Spinner>
   );
