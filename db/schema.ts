@@ -135,7 +135,7 @@ export const timerMemory = createSelectSchema(timerTable)
     warmUp: z.number().nullable(),
     intervalBells: z.array(intervalBellMemory),
     name: z.string().optional(),
-    bell: z.string().optional(),
+    bell: z.string(),
   });
 
 export const timerCreateSchema = createInsertSchema(timerTable)

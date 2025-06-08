@@ -1,6 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { StaticScreenProps } from '@react-navigation/native';
-import { useEffect } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
 import { View } from 'react-native';
 import { z } from 'zod';
@@ -8,6 +8,7 @@ import { Line } from '~/components/sheard/Line';
 import { Separator } from '~/components/ui/separator';
 import { Large } from '~/components/ui/typography';
 import { useEmitValue } from '~/hooks/useEmitValue';
+import { SoundPlayer } from '~/lib/SoundPlayer';
 import { ADIUO_TRACKS } from '~/lib/constants';
 import { Check } from '~/lib/icons/Check';
 
@@ -31,17 +32,28 @@ const schema = z.object({
 
 export function BellSoundListScreen({ route }: Props) {
   const { value } = route.params;
-  const [local, onChange] = useEmitValue(BELL_SOUND_LIST_EVENT, value);
+  const [_, onChange] = useEmitValue(BELL_SOUND_LIST_EVENT, value);
 
-  const defaultValues = {
-    list: ADIUO_TRACKS.map(e => {
-      let isSelected = false;
-      if (e.file == local) {
-        isSelected = true;
-      }
-      return { ...e, isSelected };
-    }),
-  };
+  const player = useRef<SoundPlayer | null>(null);
+
+  useEffect(() => {
+    return () => {
+      player.current?.release();
+    };
+  }, []);
+
+  const defaultValues = useMemo(() => {
+    return {
+      list: ADIUO_TRACKS.map(e => {
+        let isSelected = false;
+        if (e.file === value) {
+          player.current = new SoundPlayer(e.file);
+          isSelected = true;
+        }
+        return { ...e, isSelected };
+      }),
+    };
+  }, [value]);
 
   const {
     reset,
@@ -92,6 +104,7 @@ export function BellSoundListScreen({ route }: Props) {
                   ...fields[selectedIndex],
                   isSelected: false,
                 });
+                player.current?.replaceTrack(field.file, true);
               }
               update(index, {
                 ...fields[index],

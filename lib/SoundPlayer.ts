@@ -7,6 +7,10 @@ export class SoundPlayer {
   private isPlaying: boolean = false;
 
   constructor(filename: string, basePath = Sound.MAIN_BUNDLE) {
+    this.loadSound(filename, basePath);
+  }
+
+  private loadSound(filename: string, basePath: string) {
     this.sound = new Sound(filename, basePath, error => {
       if (error) {
         console.error('Failed to load the sound', error);
@@ -20,14 +24,13 @@ export class SoundPlayer {
     if (reset) this.sound?.setCurrentTime(0);
     this.sound?.play(success => {
       if (success) {
-        this.isPlaying = false;
+        this.isPlaying = true;
         onEnd?.();
       } else {
         console.log('error during playback');
         this.isPlaying = false;
       }
     });
-    this.isPlaying = true;
   }
 
   pause() {
@@ -51,5 +54,21 @@ export class SoundPlayer {
   release() {
     this.sound?.release();
     this.isPlaying = false;
+    this.sound = null;
+  }
+
+  replaceTrack(filename: string, autoPlay = false) {
+    this.sound?.stop(() => {
+      this.loadSound(filename, Sound.MAIN_BUNDLE);
+
+      if (autoPlay) {
+        const checkReady = setInterval(() => {
+          if (this.sound?.isLoaded()) {
+            clearInterval(checkReady);
+            this.play();
+          }
+        }, 50);
+      }
+    });
   }
 }

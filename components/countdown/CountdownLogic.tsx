@@ -42,7 +42,7 @@ export function CountdownLogic({ timer }: Props) {
 
   useEffect(() => {
     if (!player.current) {
-      player.current = new SoundPlayer('gong.mp3');
+      player.current = new SoundPlayer(timer.bell);
       if (!isWarmUp) {
         setTimeout(() => {
           player.current?.play();
