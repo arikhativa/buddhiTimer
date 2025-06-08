@@ -1,0 +1,1 @@
+ALTER TABLE `timer_table` ADD `bell` text DEFAULT 'Meditation-bowl-sound.mp3' NOT NULL;

@@ -20,3 +20,39 @@ export const NAV_THEME = {
 export const MINUTE = 60 * 1;
 export const USE_QUERY_STALE_TIME = 5 * MINUTE;
 export const BAD_ID = 0;
+
+export interface Track {
+  file: string;
+  text: string;
+}
+
+export const ADIUO_TRACKS: Track[] = [
+  {
+    file: 'cymbal_transition_sound_effect.mp3',
+    text: 'Meditation Bowl',
+  },
+  {
+    file: 'loud_gong_sound_effect.mp3',
+    text: 'Meditation Singing Bowl',
+  },
+  {
+    file: 'meditation_bowl_sound.mp3',
+    text: 'Tibetan Singing Bowl',
+  },
+  {
+    file: 'meditation_singing_bowl_sound.mp3',
+    text: 'Tinkle',
+  },
+  {
+    file: 'tibetan_singing_bowl_sound.mp3',
+    text: 'Yeat Bell',
+  },
+  {
+    file: 'tinkle_sound_effect.mp3',
+    text: 'Loud Gong',
+  },
+  {
+    file: 'yeat_bell_sound_effect.mp3',
+    text: 'Cymbal Transition',
+  },
+];

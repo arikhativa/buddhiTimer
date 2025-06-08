@@ -1,5 +1,6 @@
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
+import { ADIUO_TRACKS } from './constants';
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -27,4 +28,10 @@ export function debounce<T extends (...args: any[]) => void>(
     clearTimeout(timer);
     timer = setTimeout(() => fn(...args), delay);
   };
+}
+
+export function convertAudioFileToText(file: string): string {
+  const track = ADIUO_TRACKS.find(e => e.file === file);
+
+  return track?.text || 'No Track';
 }

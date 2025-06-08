@@ -112,6 +112,7 @@ export const timerTable = sqliteTable('timer_table', {
   duration: int().notNull(),
   warmUp: int(),
   name: text().notNull().default(''),
+  bell: text().notNull().default('meditation_bowl_sound.mp3'),
 });
 
 export const timerRelations = relations(timerTable, ({ many }) => ({
@@ -124,6 +125,7 @@ export const timerSchema = createSelectSchema(timerTable).extend({
   warmUp: z.number().nullable(),
   intervalBells: z.array(intervalBellSchema),
   name: z.string().optional(),
+  bell: z.string().optional(),
 });
 
 export const timerMemory = createSelectSchema(timerTable)
@@ -133,6 +135,7 @@ export const timerMemory = createSelectSchema(timerTable)
     warmUp: z.number().nullable(),
     intervalBells: z.array(intervalBellMemory),
     name: z.string().optional(),
+    bell: z.string().optional(),
   });
 
 export const timerCreateSchema = createInsertSchema(timerTable)
@@ -144,6 +147,7 @@ export const timerCreateSchema = createInsertSchema(timerTable)
     warmUp: z.number().nullable(),
     intervalBells: z.array(intervalBellFormSchema),
     name: z.string().optional(),
+    bell: z.string().optional(),
   });
 
 export const timerUpdateSchema = createUpdateSchema(timerTable).extend({
@@ -152,6 +156,7 @@ export const timerUpdateSchema = createUpdateSchema(timerTable).extend({
   warmUp: z.number().nullable(),
   intervalBells: z.array(intervalBellFormSchema),
   name: z.string().optional(),
+  bell: z.string().optional(),
 });
 
 export const timerKeyword = 'timer';

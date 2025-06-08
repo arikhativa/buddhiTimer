@@ -26,13 +26,14 @@ import { useNavigation } from '@react-navigation/native';
 import { BAD_ID } from '~/lib/constants';
 import { timerStrings } from '~/lib/strings/timer';
 import TimerMenu from './TimerMenu';
-import { formatSeconds } from '~/lib/utils';
+import { convertAudioFileToText, formatSeconds } from '~/lib/utils';
 import { TIMER_WHEEL_EVENT } from '~/app/TimerWheelScreen';
 import { sheardStrings } from '~/lib/strings/sheard';
 import { INERVAL_BELLS_EVENT } from '~/app/IntervalBellsScreen';
 import { useListenValue } from '~/hooks/useListenValue';
 import { Input } from '../ui/input';
 import { Play } from '~/lib/icons/Play';
+import { BELL_SOUND_LIST_EVENT } from '~/app/BellSoundListScreen';
 
 type Props = PropsWithChildren & { data?: Timer };
 type FormType = TimerUpdate | TimerCreate;
@@ -95,6 +96,7 @@ export function TimerForm({ data }: Props) {
   };
 
   useListenValue(TIMER_WHEEL_EVENT, sub);
+  useListenValue(BELL_SOUND_LIST_EVENT, sub);
 
   useListenValue(INERVAL_BELLS_EVENT, (v: IntervalBellSchema[]) => {
     let valToSet = v;
@@ -119,6 +121,26 @@ export function TimerForm({ data }: Props) {
                   value={field.value}
                   onChangeText={field.onChange}
                 />
+              </FormControl>
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="bell"
+          render={({ field: { value, name } }) => (
+            <FormItem className="flex flex-row justify-between items-center">
+              <FormLabel>{timerStrings.form.bell}</FormLabel>
+              <FormControl>
+                <Button
+                  className="min-w-28"
+                  variant={'outline'}
+                  onPress={() => {
+                    setEntry(name);
+                    navigation.navigate('BellSoundList', { value: value });
+                  }}>
+                  <Text>{convertAudioFileToText(value)}</Text>
+                </Button>
               </FormControl>
             </FormItem>
           )}

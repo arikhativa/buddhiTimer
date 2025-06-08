@@ -1,5 +1,5 @@
 import { useFieldArray, useForm } from 'react-hook-form';
-import { TouchableOpacity, View } from 'react-native';
+import { View } from 'react-native';
 import { IntervalBellSchema, intervalBellFormSchema } from '~/db/schema';
 import { Large, Muted } from '../ui/typography';
 import { Plus } from '~/lib/icons/Plus';
@@ -9,8 +9,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Separator } from '../ui/separator';
 import { sheardStrings } from '~/lib/strings/sheard';
-import { NavigationProp, useNavigation } from '@react-navigation/native';
-import { RootStackParamList } from '~/app/Layout';
+import { useNavigation } from '@react-navigation/native';
 import { INTERVAL_BELL_EVENT } from '~/app/IntervalBellScreen';
 import { useListenValue } from '~/hooks/useListenValue';
 import { formatSeconds } from '~/lib/utils';

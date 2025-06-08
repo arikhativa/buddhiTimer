@@ -26,12 +26,17 @@ import {
 } from './IntervalBellsScreen';
 import { IntervalBellParams, IntervalBellScreen } from './IntervalBellScreen';
 import { CountdownParams, CountdownScreen } from './CountdownScreen';
+import {
+  BellSoundListParams,
+  BellSoundListScreen,
+} from './BellSoundListScreen';
 
 export type RootStackParamList = {
   Home: undefined;
   Timer: TimerParams;
   TimerWheel: TimerWheelParams;
   IntervalBells: IntervalBellsParams;
+  BellSoundList: BellSoundListParams;
   IntervalBell: IntervalBellParams;
   Countdown: CountdownParams;
   Presets: undefined;
@@ -68,6 +73,12 @@ const RootStack = createNativeStackNavigator<RootStackParamList>({
       screen: TimerWheelScreen,
       options: {
         title: '',
+      },
+    },
+    BellSoundList: {
+      screen: BellSoundListScreen,
+      options: {
+        title: 'Bells Sound List',
       },
     },
     IntervalBells: {

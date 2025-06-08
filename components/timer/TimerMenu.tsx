@@ -19,7 +19,7 @@ export default function TimerMenu({ onDelete }: Props) {
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" size={'icon'}>
-          <Menu />
+          <Menu className="text-foreground" />
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent>

@@ -1,6 +1,7 @@
 export const timerStrings = {
   form: {
     name: 'Timer Name',
+    bell: 'Bell Sound',
     duration: 'Duration',
     warmUp: 'Warm Up',
     intervalBells: 'Interval Bells',
